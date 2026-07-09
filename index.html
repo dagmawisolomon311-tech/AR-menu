@@ -63,11 +63,11 @@
         </main>
     </div>
 
-    <div id="arLayer">
+        <div id="arLayer">
         <div class="ar-ui">
             <button class="btn close-btn" onclick="deactivateWebAR()">← Close Camera</button>
         </div>
-        <a-scene embedded vr-mode-ui="enabled: false">
+        <a-scene embedded vr-mode-ui="enabled: false" ar-mode-ui="enabled: false">
             <a-assets>
                 <a-asset-item id="modelSource" src=""></a-asset-item>
             </a-assets>
@@ -76,6 +76,7 @@
             <a-sky color="#f1f2f6"></a-sky>
         </a-scene>
     </div>
+
 
     <script>
         const menuPage = document.getElementById('menuPage');
