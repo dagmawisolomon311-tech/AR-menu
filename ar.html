@@ -48,7 +48,7 @@
     <button id="close">Close</button>
 
     <a-scene 
-        mindar-image="imageTargetSrc: targets.mind.txt;" 
+        mindar-image="imageTargetSrc: targets.mind;" 
         embedded 
         color-space="sRGB" 
         renderer="colorManagement: true"
@@ -88,6 +88,18 @@
 
         // Link asset to the model element
         foodModelEntity.setAttribute('src', '#dynamic-food-asset');
+        // Hide loading screen when MindAR is fully ready
+const sceneEl = document.querySelector("a-scene");
+
+sceneEl.addEventListener("ready", () => {
+    document.getElementById("loading").style.display = "none";
+});
+
+// Fallback: Just in case the event names vary, hide it if target is found
+sceneEl.addEventListener("targetFound", () => {
+    document.getElementById("loading").style.display = "none";
+});
+
 
         // Hide loading screen when ready
         document.querySelector("a-scene").addEventListener("arReady", () => {
