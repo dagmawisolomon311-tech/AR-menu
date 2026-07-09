@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic AR Menu</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    
+    <style>
+        /* --- Reset & Global Styles --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            padding-bottom: 40px;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            background-color: #ffffff;
+            padding: 20px 15px 10px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .restaurant-name {
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ff4757;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .category-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+
+        .category-nav::-webkit-scrollbar { display: none; }
+
+        .category-btn {
+            background-color: #f1f2f6;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .category-btn.active {
+            background-color: #ff4757;
+            color: white;
+        }
+
+        /* --- Menu Container --- */
+        .menu-container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* --- Menu Card Item --- */
+        .menu-card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #ededed;
+        }
+
+        /* Static Food Image Frame */
+        .image-container {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background-color: #eee;
+        }
+
+        .food-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Info Section */
+        .item-info { padding: 20px; }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .item-title { font-size: 18px; font-weight: 700; color: #2f3542; }
+        .item-price { font-size: 18px; font-weight: 700; color: #ff4757; }
+        .item-description { font-size: 14px; color: #747d8c; line-height: 1.4; margin-bottom: 20px; }
+
+        /* Buttons */
+        .action-group { display: flex; gap: 10px; }
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-ar { background-color: #2f3542; color: white; }
+        .btn-order { background-color: #ffa502; color: white; }
+
+        /* --- Full Screen AR Overlay Popup --- */
+        .ar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ar-window {
+            width: 90%;
+            height: 70%;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        model-viewer { width: 100%; height: 100%; }
+
+        .close-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="restaurant-name">Bistro Reality</div>
+        <div class="category-nav">
+            <button class="category-btn active">All Items</button>
+        </div>
+    </header>
+
+    <main class="menu-container">
+
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" class="food-img" alt="Burger">
+            </div>
+            <div class="item-info">
+                <div class="item-header">
+                    <h3 class="item-title">Classic Cheeseburger</h3>
+                    <span class="item-price">$12.99</span>
+                </div>
+                <p class="item-description">Flame-grilled beef patty, melted cheddar, crisp lettuce, tomato, and house sauce.</p>
+                <div class="action-group">
+                    <button class="btn btn-ar" onclick="openAR('models/burger.glb')">📐 View in AR</button>
+                    <button class="btn btn-order">Add to Order</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500" class="food-img" alt="Pizza">
+            </div>
+            <div class="item-info">
+                <div class="item-header">
+                    <h3 class="item-title">Pepperoni Pizza</h3>
+                    <span class="item-price">$15.49</span>
+                </div>
+                <p class="item-description">Freshly baked crust topped with rich tomato sauce, premium mozzarella, and spicy pepperoni.</p>
+                <div class="action-group">
+                    <button class="btn btn-ar" onclick="openAR('models/pizza.glb.glb')">📐 View in AR</button>
+                    <button class="btn btn-order">Add to Order</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-card">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500" class="food-img" alt="Donut">
+            </div>
+            <div class="item-info">
+                <div class="item-header">
+                    <h3 class="item-title">Glazed Chocolate Donut</h3>
+                    <span class="item-price">$4.99</span>
+                </div>
+                <p class="item-description">Soft, pillowy donut dipped in a rich chocolate glaze and topped with festive sprinkles.</p>
+                <div class="action-group">
+                    <button class="btn btn-ar" onclick="openAR('https://modelviewer.dev/shared-assets/models/Astronaut.glb')">📐 View in AR</button>
+                    <button class="btn btn-order">Add to Order</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="arOverlay" class="ar-overlay">
+        <div class="ar-window">
+            <model-viewer id="arViewer" ar ar-modes="webxr scene-viewer quick-look" camera-controls shadow-intensity="1">
+                <button slot="ar-button" style="display:none;"></button>
+            </model-viewer>
+        </div>
+        <button class="close-btn" onclick="closeAR()">← Back to Menu</button>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('arOverlay');
+        const viewer = document.getElementById('arViewer');
+
+        function openAR(modelUrl) {
+            // Set the 3D model source dynamically depending on which card was clicked
+            viewer.src = modelUrl;
+            // Reveal the popup overlay layout
+            overlay.style.display = 'flex';
+        }
+
+        function closeAR() {
+            // Hide the overlay and clear out the model source
+            overlay.style.display = 'none';
+            viewer.src = '';
+        }
+    </script>
+
+</body>
+</html>
