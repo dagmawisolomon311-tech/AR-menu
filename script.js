@@ -1,6 +1,6 @@
 function viewAR(model){
 
 window.location.href =
-"ar/ar.html?model="+model;
+"ar.html?model="+model;
 
 }
