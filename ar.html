@@ -16,14 +16,12 @@
         #loading {
             position: fixed;
             left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: black;
             color: white;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-size: 22px;
-            font-family: sans-serif;
             z-index: 999;
         }
         #close {
@@ -38,24 +36,22 @@
             font-size: 18px;
             border-radius: 10px;
             z-index: 1000;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div id="loading">
-        <div>Loading AR Scene...</div>
-        <div style="font-size: 14px; margin-top: 10px; color: #ccc;">Please allow camera access</div>
+        Loading AR...
     </div>
 
-    <button id="close">Close Menu</button>
+    <button id="close">Close</button>
 
-    <a-scene mindar-image="imageTargetSrc: targets/targets.mind;"
-
+    <a-scene 
+        mindar-image="imageTargetSrc: targets.mind.txt;" 
         embedded 
         color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights: true"
+        renderer="colorManagement: true"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false">
         
@@ -70,41 +66,37 @@
                 position="0 0 0" 
                 scale="0.5 0.5 0.5" 
                 rotation="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 12000">
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 10000">
             </a-gltf-model>
         </a-entity>
     </a-scene>
 
     <script>
-        // 1. Parse the model name from URL parameters
+        // Parse the model from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        const modelName = urlParams.get('model') || 'Avocado.glb'; // Fallback to Avocado if missing
+        const modelName = urlParams.get('model') || 'Avocado.glb';
         
         const assetsContainer = document.getElementById('assets-container');
         const foodModelEntity = document.getElementById('food-model');
 
-        // 2. Dynamically create the asset item pointing to your models folder
+        // Dynamically create the asset
         const assetItem = document.createElement('a-asset-item');
         assetItem.setAttribute('id', 'dynamic-food-asset');
-        assetItem.setAttribute('src', `../models/${modelName}`);
+        // CHANGED: Removed "../models/" because Avocado.glb is in the root folder
+        assetItem.setAttribute('src', modelName); 
         assetsContainer.appendChild(assetItem);
 
-        // 3. Link the model entity to the freshly loaded asset
+        // Link asset to the model element
         foodModelEntity.setAttribute('src', '#dynamic-food-asset');
 
-        // Hide loading screen once MindAR is ready
+        // Hide loading screen when ready
         document.querySelector("a-scene").addEventListener("arReady", () => {
             document.getElementById("loading").style.display = "none";
         });
 
-        // Error handling if AR fails to load
-        document.querySelector("a-scene").addEventListener("arError", () => {
-            alert("Failed to start AR. Make sure you are on HTTPS and allowed camera permissions.");
-        });
-
-        // Close button handler
+        // Go back home when closed
         document.getElementById("close").onclick = () => {
-            window.location.href = "../index.html";
+            window.location.href = "index.html"; // CHANGED: Removed "../" path jump
         };
     </script>
 </body>
