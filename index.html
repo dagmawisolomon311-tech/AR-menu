@@ -1,111 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Bistro Reality</title>
-
-<link rel="stylesheet" href="style.css">
-
-<link
-href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Bistro Reality</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
 <header>
-
-<div class="logo">
-🍽 Bistro Reality
-</div>
-
-<nav>
-
-<a href="#">Home</a>
-
-<a href="#">Menu</a>
-
-<a href="#">About</a>
-
-<a href="#">Contact</a>
-
-</nav>
-
+    <div class="logo">🍽 Bistro Reality</div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="admin.html">⚙️ Admin</a>
+    </nav>
 </header>
 
-
 <section class="hero">
-
-<h1>
-Experience Food in Augmented Reality
-</h1>
-
-<p>
-View your meal in 3D before ordering.
-</p>
-
+    <h1>Experience Food in Augmented Reality</h1>
+    <p>View your meal in 3D before ordering.</p>
 </section>
-
 
 <section class="menu">
     <h2>Popular Dishes</h2>
-    
     <div class="cards" id="menu-container">
-        <p style="text-align:center; width:100%;">Loading menu from database...</p>
+        <p style="text-align:center; width:100%;">Loading fresh menu from database...</p>
     </div>
 </section>
 
 <script src="script.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-<script>
-    // PASTE YOUR GOOGLE SHEETS CSV LINK HERE
-  https://docs.google.com/spreadsheets/d/e/2PACX-1vRbP_hZJo58Rv3JIl59sLO2MaFQe2m8xWVsEM8IzD9-dsJOYyjlLi0zCroOW0qj1awAiErot77L8WpT/pub?output=csv
-    const sheetUrl = "YOUR_GOOGLE_SHEET_CSV_LINK_HERE";
+    // Your unique Firebase credentials
+    const firebaseConfig = {
+      apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
+      authDomain: "bistro-reality.firebaseapp.com",
+      projectId: "bistro-reality",
+      storageBucket: "bistro-reality.firebasestorage.app",
+      messagingSenderId: "3168029834",
+      appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
+    };
 
-    // Read the spreadsheet and generate the cards
-    Papa.parse(sheetUrl, {
-        download: true,
-        header: true,
-        complete: function(results) {
-            const container = document.getElementById("menu-container");
-            container.innerHTML = ""; // Clear the "Loading..." text
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-            // Loop through each row in your spreadsheet
-            results.data.forEach(item => {
-                // Skip empty rows
-                if (!item.Name) return; 
+    // Fetch food items dynamically from Firestore
+    async function loadPublicMenu() {
+        const container = document.getElementById("menu-container");
+        container.innerHTML = ""; 
 
-                // Create the HTML for each card using the spreadsheet data
+        try {
+            const querySnapshot = await getDocs(collection(db, "menuItems"));
+            
+            if (querySnapshot.empty) {
+                container.innerHTML = "<p style='text-align:center; width:100%;'>No items found. Go to the Admin Dashboard to add dishes!</p>";
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const item = doc.data();
                 const cardHtml = `
                     <div class="card">
-                        <img src="${item.Image.trim()}" alt="${item.Name.trim()}">
-                        <h3>${item.Name.trim()}</h3>
-                        <p>${item.Description.trim()}</p>
+                        <img src="${item.Image}" alt="${item.Name}">
+                        <h3>${item.Name}</h3>
+                        <p>${item.Description}</p>
                         <div class="bottom">
-                            <span>$${item.Price.trim()}</span>
-                            <button onclick="viewAR('${item.Model.trim()}')">View in AR</button>
+                            <span>$${item.Price}</span>
+                            <button onclick="viewAR('${item.Model}')">View in AR</button>
                         </div>
                     </div>
                 `;
-                
-                // Add the new card to the screen
                 container.innerHTML += cardHtml;
             });
-        },
-        error: function(err) {
-            console.error("Error reading spreadsheet:", err);
-            document.getElementById("menu-container").innerHTML = "<p>Failed to load menu. Please try again later.</p>";
+        } catch (error) {
+            console.error("Database loading error:", error);
+            container.innerHTML = "<p style='text-align:center; width:100%;'>Error loading menu database.</p>";
         }
-    });
+    }
+
+    // Trigger loader on startup
+    loadPublicMenu();
 </script>
-<script src="script.js"></script>
 
 </body>
-
 </html>
