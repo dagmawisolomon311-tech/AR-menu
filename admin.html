@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bistro Reality - Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-container { padding: 40px 20px; max-width: 600px; margin: auto; }
+    .form-group { margin-bottom: 15px; }
+    input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: 'Poppins', sans-serif;}
+    .save-btn { background: #ff5722; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold;}
+    .menu-item { background: white; padding: 15px; margin: 15px 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,.05); display: flex; justify-content: space-between; align-items: center;}
+    .delete-btn { background: #d32f2f; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;}
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">⚙️ Admin Dashboard</div>
+    <nav><a href="index.html">Back to Live Site</a></nav>
+  </header>
+
+  <div class="admin-container">
+    <h2>Add New Dish</h2>
+    <div class="form-group"><input type="text" id="name" placeholder="Dish Name (e.g. Avocado Salad)"></div>
+    <div class="form-group"><input type="text" id="desc" placeholder="Description"></div>
+    <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 12.99)"></div>
+    <div class="form-group"><input type="text" id="img" placeholder="Image File (e.g. Avocado.jpg)"></div>
+    <div class="form-group"><input type="text" id="model" placeholder="Model File (e.g. Avocado.glb)"></div>
+    <button class="save-btn" id="add-btn">Save to Database</button>
+
+    <h2 style="margin-top: 50px;">Current Menu</h2>
+    <div id="menu-list">Loading database...</div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
+      authDomain: "bistro-reality.firebaseapp.com",
+      projectId: "bistro-reality",
+      storageBucket: "bistro-reality.firebasestorage.app",
+      messagingSenderId: "3168029834",
+      appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const menuCollection = collection(db, "menuItems");
+
+    // Function to add a new item
+    document.getElementById("add-btn").addEventListener("click", async () => {
+      const name = document.getElementById("name").value;
+      const desc = document.getElementById("desc").value;
+      const price = document.getElementById("price").value;
+      const img = document.getElementById("img").value;
+      const model = document.getElementById("model").value;
+
+      if(!name || !price) return alert("Please fill in the dish name and price.");
+
+      await addDoc(menuCollection, { Name: name, Description: desc, Price: price, Image: img, Model: model });
+      alert("Dish added securely!");
+      window.location.reload();
+    });
+
+    // Function to load the list of items
+    async function loadMenu() {
+      const querySnapshot = await getDocs(menuCollection);
+      const list = document.getElementById("menu-list");
+      list.innerHTML = "";
+      
+      if(querySnapshot.empty) {
+          list.innerHTML = "<p>No items found.</p>";
+      }
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        list.innerHTML += `
+          <div class="menu-item">
+            <div><strong>${data.Name}</strong> - $${data.Price}</div>
+            <button class="delete-btn" onclick="window.deleteItem('${docSnap.id}')">Delete</button>
+          </div>
+        `;
+      });
+    }
+
+    // Function to delete an item
+    window.deleteItem = async (id) => {
+      if(confirm("Are you sure you want to remove this dish?")) {
+        await deleteDoc(doc(db, "menuItems", id));
+        window.location.reload();
+      }
+    };
+
+    loadMenu();
+  </script>
+</body>
+</html>
