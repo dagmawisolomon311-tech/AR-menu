@@ -52,85 +52,58 @@ View your meal in 3D before ordering.
 
 
 <section class="menu">
-
-<h2>Popular Dishes</h2>
-
-<div class="cards">
-
-
-<div class="card">
-
-<img src="./avocado.jpg">
-
-<h3>Avocado Salad</h3>
-
-<p>
-Fresh avocado with vegetables.
-</p>
-
-<div class="bottom">
-
-<span>$12.99</span>
-
-<button onclick="viewAR('Avocado.glb')">View in AR</button>
-
-</div>
-
-</div>
-
-
-
-<div class="card">
-
-<img src="./Burger.jpg">
-
-<h3>Classic Burger</h3>
-
-<p>
-Flame grilled beef burger.
-</p>
-
-<div class="bottom">
-
-<span>$15.99</span>
-
-<button>
-Coming Soon
-</button>
-
-</div>
-
-</div>
-
-
-
-<div class="card">
-
-<img src="images/pizza.jpg">
-
-<h3>Pepperoni Pizza</h3>
-
-<p>
-Italian stone baked pizza.
-</p>
-
-<div class="bottom">
-
-<span>$18.99</span>
-
-<button onclick="viewAR('pizza.glb')">View in AR</button>
-
-
-</div>
-
-</div>
-
-
-
-</div>
-
+    <h2>Popular Dishes</h2>
+    
+    <div class="cards" id="menu-container">
+        <p style="text-align:center; width:100%;">Loading menu from database...</p>
+    </div>
 </section>
 
+<script src="script.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+<script>
+    // PASTE YOUR GOOGLE SHEETS CSV LINK HERE
+  https://docs.google.com/spreadsheets/d/e/2PACX-1vRbP_hZJo58Rv3JIl59sLO2MaFQe2m8xWVsEM8IzD9-dsJOYyjlLi0zCroOW0qj1awAiErot77L8WpT/pub?output=csv
+    const sheetUrl = "YOUR_GOOGLE_SHEET_CSV_LINK_HERE";
+
+    // Read the spreadsheet and generate the cards
+    Papa.parse(sheetUrl, {
+        download: true,
+        header: true,
+        complete: function(results) {
+            const container = document.getElementById("menu-container");
+            container.innerHTML = ""; // Clear the "Loading..." text
+
+            // Loop through each row in your spreadsheet
+            results.data.forEach(item => {
+                // Skip empty rows
+                if (!item.Name) return; 
+
+                // Create the HTML for each card using the spreadsheet data
+                const cardHtml = `
+                    <div class="card">
+                        <img src="${item.Image.trim()}" alt="${item.Name.trim()}">
+                        <h3>${item.Name.trim()}</h3>
+                        <p>${item.Description.trim()}</p>
+                        <div class="bottom">
+                            <span>$${item.Price.trim()}</span>
+                            <button onclick="viewAR('${item.Model.trim()}')">View in AR</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add the new card to the screen
+                container.innerHTML += cardHtml;
+            });
+        },
+        error: function(err) {
+            console.error("Error reading spreadsheet:", err);
+            document.getElementById("menu-container").innerHTML = "<p>Failed to load menu. Please try again later.</p>";
+        }
+    });
+</script>
 <script src="script.js"></script>
 
 </body>
