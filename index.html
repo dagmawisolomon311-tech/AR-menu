@@ -23,10 +23,16 @@
 </section>
 
 <section class="menu">
+    
     <h2>Popular Dishes</h2>
-    <div class="cards" id="menu-container">
-        <p style="text-align:center; width:100%;">Loading fresh menu from database...</p>
+    <div class="cards" id="food-container">
+        <p id="loading-text" style="text-align:center; width:100%;">Loading fresh menu from database...</p>
     </div>
+
+    <h2 style="margin-top: 50px;">Refreshing Drinks</h2>
+    <div class="cards" id="drink-container">
+        </div>
+
 </section>
 
 <script src="script.js"></script>
@@ -35,7 +41,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-    // Your unique Firebase credentials
     const firebaseConfig = {
       apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
       authDomain: "bistro-reality.firebaseapp.com",
@@ -45,20 +50,21 @@
       appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Fetch food items dynamically from Firestore
     async function loadPublicMenu() {
-        const container = document.getElementById("menu-container");
-        container.innerHTML = ""; 
+        const foodContainer = document.getElementById("food-container");
+        const drinkContainer = document.getElementById("drink-container");
+        const loadingText = document.getElementById("loading-text");
 
         try {
             const querySnapshot = await getDocs(collection(db, "menuItems"));
             
+            if (loadingText) loadingText.remove();
+
             if (querySnapshot.empty) {
-                container.innerHTML = "<p style='text-align:center; width:100%;'>No items found. Go to the Admin Dashboard to add dishes!</p>";
+                foodContainer.innerHTML = "<p style='text-align:center; width:100%;'>No items found. Go to the Admin Dashboard to add dishes!</p>";
                 return;
             }
 
@@ -75,15 +81,20 @@
                         </div>
                     </div>
                 `;
-                container.innerHTML += cardHtml;
+                
+                // Sort by Category
+                if (item.Category === "Drink") {
+                    drinkContainer.innerHTML += cardHtml;
+                } else {
+                    foodContainer.innerHTML += cardHtml; // Defaults everything else to Food
+                }
             });
         } catch (error) {
             console.error("Database loading error:", error);
-            container.innerHTML = "<p style='text-align:center; width:100%;'>Error loading menu database.</p>";
+            foodContainer.innerHTML = "<p style='text-align:center; width:100%;'>Error loading menu database.</p>";
         }
     }
 
-    // Trigger loader on startup
     loadPublicMenu();
 </script>
 
