@@ -8,18 +8,15 @@
     body { font-family: sans-serif; background: #f9f9f9; margin: 0; padding: 0;}
     header { background: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between;}
     header a { text-decoration: none; color: #ff5722; font-weight: bold; }
-    
-    /* Main form wrapper is hidden completely on load */
     #dashboardArea { display: none; }
-    
     .admin-container { padding: 40px 20px; max-width: 600px; margin: auto; }
     .form-group { margin-bottom: 15px; }
-    input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+    input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: sans-serif;}
     .save-btn { background: #ff5722; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold;}
     .menu-item { background: white; padding: 15px; margin: 15px 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,.05); display: flex; justify-content: space-between; align-items: center;}
     .delete-btn { background: #d32f2f; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;}
+    .badge { background: #eee; padding: 3px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px; color: #555; }
     
-    /* Login Screen styles */
     .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; display: flex; justify-content: center; align-items: center; z-index: 1000; }
     .login-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
     .login-box h2 { margin-top: 0; color: #333; margin-bottom: 20px; }
@@ -31,12 +28,8 @@
   <div class="login-overlay" id="loginScreen">
     <div class="login-box">
       <h2>⚙️ Admin Access Required</h2>
-      <div class="form-group">
-        <input type="text" id="usernameInput" placeholder="Username">
-      </div>
-      <div class="form-group">
-        <input type="password" id="passwordInput" placeholder="Password">
-      </div>
+      <div class="form-group"><input type="text" id="usernameInput" placeholder="Username"></div>
+      <div class="form-group"><input type="password" id="passwordInput" placeholder="Password"></div>
       <button class="login-btn" id="loginBtn">Login</button>
     </div>
   </div>
@@ -48,12 +41,20 @@
     </header>
 
     <div class="admin-container">
-      <h2>Add New Dish</h2>
-      <div class="form-group"><input type="text" id="name" placeholder="Dish Name (e.g. Avocado Salad)"></div>
+      <h2>Add New Item</h2>
+      
+      <div class="form-group">
+        <select id="category">
+          <option value="Food">🍽️ Food</option>
+          <option value="Drink">🥤 Drink</option>
+        </select>
+      </div>
+
+      <div class="form-group"><input type="text" id="name" placeholder="Item Name (e.g. Iced Coffee)"></div>
       <div class="form-group"><input type="text" id="desc" placeholder="Description"></div>
-      <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 12.99)"></div>
-      <div class="form-group"><input type="text" id="img" placeholder="Image File (e.g. Avocado.jpg)"></div>
-      <div class="form-group"><input type="text" id="model" placeholder="Model File (e.g. Avocado.glb)"></div>
+      <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 4.99)"></div>
+      <div class="form-group"><input type="text" id="img" placeholder="Image File (e.g. coffee.jpg)"></div>
+      <div class="form-group"><input type="text" id="model" placeholder="Model File (e.g. coffee.glb)"></div>
       <button class="save-btn" id="add-btn">Save to Database</button>
 
       <h2 style="margin-top: 50px;">Current Menu</h2>
@@ -78,44 +79,47 @@
     const db = getFirestore(app);
     const menuCollection = collection(db, "menuItems");
 
-    // LOGIN GUARD CREDENTIALS
     const ALLOWED_USER = "test";       
     const ALLOWED_PASS = "dagi";   
 
-    // Handle Login Button Click
     document.getElementById("loginBtn").addEventListener("click", () => {
       const user = document.getElementById("usernameInput").value;
       const pass = document.getElementById("passwordInput").value;
 
       if (user === ALLOWED_USER && pass === ALLOWED_PASS) {
-        // Remove login screen and reveal dashboard form
         document.getElementById("loginScreen").style.display = "none";
         document.getElementById("dashboardArea").style.display = "block";
-        loadMenu(); // Pull database entries now that they are verified
+        loadMenu(); 
       } else {
         alert("Incorrect username or password!");
       }
     });
 
-    // Add New Item Functionality
     document.getElementById("add-btn").addEventListener("click", async () => {
       const btn = document.getElementById("add-btn");
+      const category = document.getElementById("category").value; // Get category
       const name = document.getElementById("name").value;
       const desc = document.getElementById("desc").value;
       const price = document.getElementById("price").value;
       const img = document.getElementById("img").value;
       const model = document.getElementById("model").value;
 
-      if(!name || !price) return alert("Please fill in the dish name and price.");
+      if(!name || !price) return alert("Please fill in the item name and price.");
 
       btn.innerText = "Saving to Firebase...";
       btn.style.background = "#ccc";
 
       try {
-        await addDoc(menuCollection, { Name: name, Description: desc, Price: price, Image: img, Model: model });
-        alert("Dish added securely!");
+        await addDoc(menuCollection, { 
+            Category: category, 
+            Name: name, 
+            Description: desc, 
+            Price: price, 
+            Image: img, 
+            Model: model 
+        });
+        alert("Item added securely!");
         
-        // Clear inputs clean without page refresh (so user stays logged in)
         document.getElementById("name").value = "";
         document.getElementById("desc").value = "";
         document.getElementById("price").value = "";
@@ -132,7 +136,6 @@
       }
     });
 
-    // Load Live Items onto layout
     async function loadMenu() {
       try {
         const querySnapshot = await getDocs(menuCollection);
@@ -146,9 +149,13 @@
 
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
+          const itemCategory = data.Category || "Food"; // Default old items to Food
           list.innerHTML += `
             <div class="menu-item">
-              <div><strong>${data.Name}</strong> - $${data.Price}</div>
+              <div>
+                <strong>${data.Name}</strong> - $${data.Price}
+                <span class="badge">${itemCategory}</span>
+              </div>
               <button class="delete-btn" onclick="window.deleteItem('${docSnap.id}')">Delete</button>
             </div>
           `;
@@ -158,9 +165,8 @@
       }
     }
 
-    // Delete Item Process
     window.deleteItem = async (id) => {
-      if(confirm("Are you sure you want to remove this dish?")) {
+      if(confirm("Are you sure you want to remove this item?")) {
         try {
           await deleteDoc(doc(db, "menuItems", id));
           loadMenu();
