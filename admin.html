@@ -4,34 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bistro Reality - Admin</title>
-  <link rel="stylesheet" href="style.css">
   <style>
-    .admin-container { padding: 40px 20px; max-width: 600px; margin: auto; }
+    body { font-family: sans-serif; background: #f9f9f9; margin: 0; padding: 0;}
+    header { background: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between;}
+    header a { text-decoration: none; color: #ff5722; font-weight: bold; }
+    .admin-container { padding: 40px 20px; max-width: 600px; margin: auto; display: none; } /* Hidden by default until login */
     .form-group { margin-bottom: 15px; }
-    input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: 'Poppins', sans-serif;}
+    input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
     .save-btn { background: #ff5722; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold;}
     .menu-item { background: white; padding: 15px; margin: 15px 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,.05); display: flex; justify-content: space-between; align-items: center;}
     .delete-btn { background: #d32f2f; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;}
+    
+    /* Login Box Styles */
+    .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .login-box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+    .login-box h2 { margin-top: 0; color: #333; margin-bottom: 20px; }
+    .login-btn { background: #333; color: white; padding: 12px; border: none; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">⚙️ Admin Dashboard</div>
-    <nav><a href="index.html">Back to Live Site</a></nav>
-  </header>
+  <div class="login-overlay" id="loginScreen">
+    <div class="login-box">
+      <h2>⚙️ Admin Access</h2>
+      <div class="form-group">
+        <input type="text" id="usernameInput" placeholder="Username">
+      </div>
+      <div class="form-group">
+        <input type="password" id="passwordInput" placeholder="Password">
+      </div>
+      <button class="login-btn" id="loginBtn">Login</button>
+    </div>
+  </div>
 
-  <div class="admin-container">
-    <h2>Add New Dish</h2>
-    <div class="form-group"><input type="text" id="name" placeholder="Dish Name (e.g. Avocado Salad)"></div>
-    <div class="form-group"><input type="text" id="desc" placeholder="Description"></div>
-    <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 12.99)"></div>
-    <div class="form-group"><input type="text" id="img" placeholder="Image File (e.g. Avocado.jpg)"></div>
-    <div class="form-group"><input type="text" id="model" placeholder="Model File (e.g. Avocado.glb)"></div>
-    <button class="save-btn" id="add-btn">Save to Database</button>
+  <div id="dashboardArea">
+    <header>
+      <div style="font-weight: bold; font-size: 18px;">⚙️ Admin Dashboard</div>
+      <nav><a href="index.html">Back to Live Site</a></nav>
+    </header>
 
-    <h2 style="margin-top: 50px;">Current Menu</h2>
-    <div id="menu-list">Loading database...</div>
+    <div class="admin-container" id="adminContainer">
+      <h2>Add New Dish</h2>
+      <div class="form-group"><input type="text" id="name" placeholder="Dish Name (e.g. Avocado Salad)"></div>
+      <div class="form-group"><input type="text" id="desc" placeholder="Description"></div>
+      <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 12.99)"></div>
+      <div class="form-group"><input type="text" id="img" placeholder="Image File (e.g. Avocado.jpg)"></div>
+      <div class="form-group"><input type="text" id="model" placeholder="Model File (e.g. Avocado.glb)"></div>
+      <button class="save-btn" id="add-btn">Save to Database</button>
+
+      <h2 style="margin-top: 50px;">Current Menu</h2>
+      <div id="menu-list">Loading database...</div>
+    </div>
   </div>
 
   <script type="module">
@@ -51,8 +74,27 @@
     const db = getFirestore(app);
     const menuCollection = collection(db, "menuItems");
 
-    // Function to add a new item
+    // LOGIN GUARD CONFIGURATION
+    const ALLOWED_USER = "admin";       // <-- Change username here
+    const ALLOWED_PASS = "bistro2026";   // <-- Change password here
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const user = document.getElementById("usernameInput").value;
+      const pass = document.getElementById("passwordInput").value;
+
+      if (user === ALLOWED_USER && pass === ALLOWED_PASS) {
+        // Hide login, reveal admin panel
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("adminContainer").style.display = "block";
+        loadMenu(); // Only load the database after successful login
+      } else {
+        alert("Incorrect username or password!");
+      }
+    });
+
+    // Add New Item
     document.getElementById("add-btn").addEventListener("click", async () => {
+      const btn = document.getElementById("add-btn");
       const name = document.getElementById("name").value;
       const desc = document.getElementById("desc").value;
       const price = document.getElementById("price").value;
@@ -61,41 +103,67 @@
 
       if(!name || !price) return alert("Please fill in the dish name and price.");
 
-      await addDoc(menuCollection, { Name: name, Description: desc, Price: price, Image: img, Model: model });
-      alert("Dish added securely!");
-      window.location.reload();
+      btn.innerText = "Saving to Firebase...";
+      btn.style.background = "#ccc";
+
+      try {
+        await addDoc(menuCollection, { Name: name, Description: desc, Price: price, Image: img, Model: model });
+        alert("Dish added securely!");
+        
+        // Reset fields instead of reloading full page so they don't have to re-login
+        document.getElementById("name").value = "";
+        document.getElementById("desc").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("img").value = "";
+        document.getElementById("model").value = "";
+        
+        btn.innerText = "Save to Database";
+        btn.style.background = "#ff5722";
+        loadMenu(); 
+      } catch (error) {
+        alert("ERROR SAVING: " + error.message);
+        btn.innerText = "Save to Database";
+        btn.style.background = "#ff5722";
+      }
     });
 
-    // Function to load the list of items
+    // Load Items
     async function loadMenu() {
-      const querySnapshot = await getDocs(menuCollection);
-      const list = document.getElementById("menu-list");
-      list.innerHTML = "";
-      
-      if(querySnapshot.empty) {
-          list.innerHTML = "<p>No items found.</p>";
-      }
+      try {
+        const querySnapshot = await getDocs(menuCollection);
+        const list = document.getElementById("menu-list");
+        list.innerHTML = "";
+        
+        if(querySnapshot.empty) {
+            list.innerHTML = "<p>No items found.</p>";
+            return;
+        }
 
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        list.innerHTML += `
-          <div class="menu-item">
-            <div><strong>${data.Name}</strong> - $${data.Price}</div>
-            <button class="delete-btn" onclick="window.deleteItem('${docSnap.id}')">Delete</button>
-          </div>
-        `;
-      });
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          list.innerHTML += `
+            <div class="menu-item">
+              <div><strong>${data.Name}</strong> - $${data.Price}</div>
+              <button class="delete-btn" onclick="window.deleteItem('${docSnap.id}')">Delete</button>
+            </div>
+          `;
+        });
+      } catch (error) {
+         document.getElementById("menu-list").innerHTML = "<p>Error loading database: " + error.message + "</p>";
+      }
     }
 
-    // Function to delete an item
+    // Delete Item
     window.deleteItem = async (id) => {
       if(confirm("Are you sure you want to remove this dish?")) {
-        await deleteDoc(doc(db, "menuItems", id));
-        window.location.reload();
+        try {
+          await deleteDoc(doc(db, "menuItems", id));
+          loadMenu();
+        } catch (error) {
+          alert("ERROR DELETING: " + error.message);
+        }
       }
     };
-
-    loadMenu();
   </script>
 </body>
 </html>
