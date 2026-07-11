@@ -2,44 +2,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Bistro Reality AR</title>
+    
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <style>
-        html, body {
-            margin: 0;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            /* Prevents the browser from refreshing when pulling down */
-            overscroll-behavior-y: contain; 
-        }
-        #loading {
-            position: fixed;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background: black;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 22px;
-            z-index: 999;
-        }
-        #close {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 30px;
-            border: none;
-            background: #ff5722;
-            color: white;
-            font-size: 18px;
-            border-radius: 10px;
-            z-index: 1000;
-        }
+        html, body { margin: 0; overflow: hidden; width: 100%; height: 100%; touch-action: none; }
+        #loading { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: black; color: white; display: flex; justify-content: center; align-items: center; font-size: 22px; z-index: 999; }
+        #close { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 15px 30px; border: none; background: #ff5722; color: white; font-size: 18px; border-radius: 10px; z-index: 1000; }
     </style>
+
+    <script>
+        AFRAME.registerComponent('touch-gestures', {
+            init: function () {
+                this.isDragging = false;
+                this.previousPosition = { x: 0, y: 0 };
+                this.initialPinchDistance = 0;
+                this.initialScale = 20; // Your default model scale
+
+                this.onTouchStart = this.onTouchStart.bind(this);
+                this.onTouchMove = this.onTouchMove.bind(this);
+                this.onTouchEnd = this.onTouchEnd.bind(this);
+
+                // Wait for the 3D canvas to exist, then attach our fingers directly to it
+                this.el.sceneEl.addEventListener('loaded', () => {
+                    const canvas = this.el.sceneEl.canvas;
+                    canvas.addEventListener('touchstart', this.onTouchStart, { passive: false });
+                    canvas.addEventListener('touchmove', this.onTouchMove, { passive: false });
+                    canvas.addEventListener('touchend', this.onTouchEnd);
+                });
+            },
+            
+            onTouchStart: function(e) {
+                if (e.touches.length === 1) {
+                    this.isDragging = true;
+                    this.previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
+                } else if (e.touches.length === 2) {
+                    this.isDragging = false;
+                    this.initialPinchDistance = Math.hypot(
+                        e.touches[0].pageX - e.touches[1].pageX,
+                        e.touches[0].pageY - e.touches[1].pageY
+                    );
+                    this.initialScale = this.el.object3D.scale.x;
+                }
+            },
+            
+            onTouchMove: function(e) {
+                // THIS IS THE MAGIC LINE: Stops the browser from trying to scroll/bounce the page
+                e.preventDefault(); 
+
+                if (this.isDragging && e.touches.length === 1) {
+                    const deltaX = e.touches[0].pageX - this.previousPosition.x;
+                    const deltaY = e.touches[0].pageY - this.previousPosition.y;
+                    
+                    // Directly updating the 3D object's math for perfectly smooth rotation
+                    this.el.object3D.rotation.y += deltaX * 0.01;
+                    this.el.object3D.rotation.x += deltaY * 0.01;
+                    
+                    this.previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
+                } else if (e.touches.length === 2) {
+                    const currentDistance = Math.hypot(
+                        e.touches[0].pageX - e.touches[1].pageX,
+                        e.touches[0].pageY - e.touches[1].pageY
+                    );
+                    const pinchRatio = currentDistance / this.initialPinchDistance;
+                    let newScale = this.initialScale * pinchRatio;
+                    
+                    // Zoom limits
+                    if (newScale < 5) newScale = 5;
+                    if (newScale > 60) newScale = 60;
+                    
+                    this.el.object3D.scale.set(newScale, newScale, newScale);
+                }
+            },
+            
+            onTouchEnd: function() {
+                this.isDragging = false;
+            }
+        });
+    </script>
 </head>
 <body>
 
@@ -63,13 +105,14 @@
                 id="food-model"
                 position="0 0 0" 
                 scale="20 20 20" 
-                rotation="0 0 0">
+                rotation="0 0 0"
+                touch-gestures>
             </a-gltf-model>
         </a-entity>
     </a-scene>
 
     <script>
-        // --- 1. Load the Model ---
+        // Load the chosen model dynamically
         const urlParams = new URLSearchParams(window.location.search);
         const modelName = urlParams.get('model') || 'Avocado.glb';
         
@@ -83,79 +126,14 @@
 
         foodModelEntity.setAttribute('src', '#dynamic-food-asset');
 
-        // --- 2. Handle Loading Screen & Close Button ---
+        // Handle loading screen logic
         const sceneEl = document.querySelector("a-scene");
         sceneEl.addEventListener("ready", () => document.getElementById("loading").style.display = "none");
         sceneEl.addEventListener("targetFound", () => document.getElementById("loading").style.display = "none");
         sceneEl.addEventListener("arReady", () => document.getElementById("loading").style.display = "none");
 
+        // Close button redirects back to the menu
         document.getElementById("close").onclick = () => window.location.href = "index.html";
-
-        // --- 3. CUSTOM SCREEN-WIDE TOUCH CONTROLS ---
-        let isDragging = false;
-        let previousPosition = { x: 0, y: 0 };
-        let initialPinchDistance = 0;
-        let initialScale = 20;
-
-        // Listen for when fingers touch the screen
-        window.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                // One finger = rotation
-                isDragging = true;
-                previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
-            } else if (e.touches.length === 2) {
-                // Two fingers = zoom (scale)
-                isDragging = false;
-                initialPinchDistance = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-                // Get the current scale before zooming
-                const currentScale = foodModelEntity.getAttribute('scale');
-                initialScale = currentScale.x;
-            }
-        });
-
-        // Listen for fingers dragging across the screen
-        window.addEventListener('touchmove', (e) => {
-            if (isDragging && e.touches.length === 1) {
-                // Calculate how far the finger moved
-                const deltaX = e.touches[0].pageX - previousPosition.x;
-                const deltaY = e.touches[0].pageY - previousPosition.y;
-                
-                const currentRotation = foodModelEntity.getAttribute('rotation');
-                
-                // Spin the model
-                foodModelEntity.setAttribute('rotation', {
-                    x: currentRotation.x - deltaY * 0.5,
-                    y: currentRotation.y + deltaX * 0.5,
-                    z: currentRotation.z
-                });
-
-                previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
-            } else if (e.touches.length === 2) {
-                // Calculate new distance between two fingers
-                const currentDistance = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-                
-                // Adjust scale based on pinch
-                const pinchScale = currentDistance / initialPinchDistance;
-                let newScale = initialScale * pinchScale;
-                
-                // Prevent zooming in too close or out too far
-                if (newScale < 5) newScale = 5;
-                if (newScale > 60) newScale = 60;
-
-                foodModelEntity.setAttribute('scale', `${newScale} ${newScale} ${newScale}`);
-            }
-        });
-
-        // Stop rotating when finger lifts off
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-        });
     </script>
 </body>
 </html>
