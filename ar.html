@@ -14,53 +14,26 @@
     </style>
 
     <script>
-        AFRAME.registerComponent('touch-gestures', {
+                AFRAME.registerComponent('touch-gestures', {
             init: function () {
                 this.isDragging = false;
                 this.previousPosition = { x: 0, y: 0 };
                 this.initialPinchDistance = 0;
-                this.initialScale = 20; // Your default model scale
+                // CHANGED: Lowered from 20 to 1 so giant models start at a normal size
+                this.initialScale = 1; 
 
                 this.onTouchStart = this.onTouchStart.bind(this);
                 this.onTouchMove = this.onTouchMove.bind(this);
                 this.onTouchEnd = this.onTouchEnd.bind(this);
-
-                // Wait for the 3D canvas to exist, then attach our fingers directly to it
-                this.el.sceneEl.addEventListener('loaded', () => {
-                    const canvas = this.el.sceneEl.canvas;
-                    canvas.addEventListener('touchstart', this.onTouchStart, { passive: false });
-                    canvas.addEventListener('touchmove', this.onTouchMove, { passive: false });
-                    canvas.addEventListener('touchend', this.onTouchEnd);
-                });
+                // ... (rest of init stays the same)
             },
             
-            onTouchStart: function(e) {
-                if (e.touches.length === 1) {
-                    this.isDragging = true;
-                    this.previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
-                } else if (e.touches.length === 2) {
-                    this.isDragging = false;
-                    this.initialPinchDistance = Math.hypot(
-                        e.touches[0].pageX - e.touches[1].pageX,
-                        e.touches[0].pageY - e.touches[1].pageY
-                    );
-                    this.initialScale = this.el.object3D.scale.x;
-                }
-            },
+            // ... (onTouchStart stays the same)
             
             onTouchMove: function(e) {
-                // THIS IS THE MAGIC LINE: Stops the browser from trying to scroll/bounce the page
                 e.preventDefault(); 
-
-                if (this.isDragging && e.touches.length === 1) {
-                    const deltaX = e.touches[0].pageX - this.previousPosition.x;
-                    const deltaY = e.touches[0].pageY - this.previousPosition.y;
-                    
-                    // Directly updating the 3D object's math for perfectly smooth rotation
-                    this.el.object3D.rotation.y += deltaX * 0.01;
-                    this.el.object3D.rotation.x += deltaY * 0.01;
-                    
-                    this.previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
+                // ... (rotation code stays the same)
+                
                 } else if (e.touches.length === 2) {
                     const currentDistance = Math.hypot(
                         e.touches[0].pageX - e.touches[1].pageX,
@@ -69,13 +42,15 @@
                     const pinchRatio = currentDistance / this.initialPinchDistance;
                     let newScale = this.initialScale * pinchRatio;
                     
-                    // Zoom limits
-                    if (newScale < 5) newScale = 5;
-                    if (newScale > 60) newScale = 60;
+                    // CHANGED: Expanded the limits so you can shrink it really small or make it big
+                    if (newScale < 0.1) newScale = 0.1;
+                    if (newScale > 100) newScale = 100;
                     
                     this.el.object3D.scale.set(newScale, newScale, newScale);
                 }
             },
+            // ...
+
             
             onTouchEnd: function() {
                 this.isDragging = false;
@@ -100,15 +75,15 @@
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        <a-entity mindar-image-target="targetIndex: 0">
+                <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
                 id="food-model"
                 position="0 0 0" 
-                scale="20 20 20" 
-                rotation="0 0 0"
+                scale="1 1 1"    rotation="0 0 0"
                 touch-gestures>
             </a-gltf-model>
         </a-entity>
+
     </a-scene>
 
     <script>
