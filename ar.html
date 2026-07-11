@@ -6,6 +6,7 @@
     <title>Bistro Reality AR</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
     <style>
         html, body {
             margin: 0;
@@ -53,12 +54,17 @@
         color-space="sRGB" 
         renderer="colorManagement: true"
         vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false">
+        device-orientation-permission-ui="enabled: false"
+        gesture-detector>
         
-        <a-assets id="assets-container">
-            </a-assets>
+        <a-assets id="assets-container"></a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera 
+            position="0 0 0" 
+            look-controls="enabled: false"
+            cursor="fuse: false; rayOrigin: mouse;" 
+            raycaster="objects: .clickable">
+        </a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
@@ -66,7 +72,8 @@
                 position="0 0 0" 
                 scale="20 20 20" 
                 rotation="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 10000">
+                class="clickable"
+                gesture-handler="minScale: 5; maxScale: 50">
             </a-gltf-model>
         </a-entity>
     </a-scene>
@@ -82,24 +89,23 @@
         // Dynamically create the asset
         const assetItem = document.createElement('a-asset-item');
         assetItem.setAttribute('id', 'dynamic-food-asset');
-        // CHANGED: Removed "../models/" because Avocado.glb is in the root folder
         assetItem.setAttribute('src', modelName); 
         assetsContainer.appendChild(assetItem);
 
         // Link asset to the model element
         foodModelEntity.setAttribute('src', '#dynamic-food-asset');
+
         // Hide loading screen when MindAR is fully ready
-const sceneEl = document.querySelector("a-scene");
+        const sceneEl = document.querySelector("a-scene");
 
-sceneEl.addEventListener("ready", () => {
-    document.getElementById("loading").style.display = "none";
-});
+        sceneEl.addEventListener("ready", () => {
+            document.getElementById("loading").style.display = "none";
+        });
 
-// Fallback: Just in case the event names vary, hide it if target is found
-sceneEl.addEventListener("targetFound", () => {
-    document.getElementById("loading").style.display = "none";
-});
-
+        // Fallback: Just in case the event names vary, hide it if target is found
+        sceneEl.addEventListener("targetFound", () => {
+            document.getElementById("loading").style.display = "none";
+        });
 
         // Hide loading screen when ready
         document.querySelector("a-scene").addEventListener("arReady", () => {
@@ -108,7 +114,7 @@ sceneEl.addEventListener("targetFound", () => {
 
         // Go back home when closed
         document.getElementById("close").onclick = () => {
-            window.location.href = "index.html"; // CHANGED: Removed "../" path jump
+            window.location.href = "index.html"; 
         };
     </script>
 </body>
