@@ -2,101 +2,195 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Bistro Reality</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dukem - AR Restaurant & Lounge</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header>
-    <div class="logo">🍽 Bistro Reality</div>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="admin.html">⚙️ Admin</a>
-    </nav>
-</header>
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo">
+            <span class="logo-icon">D</span> Dukem
+        </div>
+        <nav>
+            <a href="index.html" class="active">Home</a>
+            <a href="#menu-section">Menu</a>
+            <a href="#story-section">Story</a>
+            <a href="admin.html" class="admin-link">⚙️ Admin</a>
+        </nav>
+        <button class="visit-btn" onclick="document.getElementById('location-section').scrollIntoView({behavior: 'smooth'})">Visit Us</button>
+    </header>
 
-<section class="hero">
-    <h1>Experience Food in Augmented Reality</h1>
-    <p>View your meal in 3D before ordering.</p>
-</section>
-
-<section class="menu">
-    
-    <h2>Popular Dishes</h2>
-    <div class="cards" id="food-container">
-        <p id="loading-text" style="text-align:center; width:100%;">Loading fresh menu from database...</p>
-    </div>
-
-    <h2 style="margin-top: 50px;">Refreshing Drinks</h2>
-    <div class="cards" id="drink-container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="location-badge">• DUKEM · ETHIOPIA</div>
+        <h1>Tinsae <span class="highlight">Kurt</span> & <i>Ketfo</i>, Burger & <span class="highlight">Pizza</span></h1>
+        <p class="hero-subtext">Authentic kurt & ketfo carved from Ethiopian tradition, next to flame-grilled burgers and wood-fired pizza. Two worlds. One table.</p>
+        
+        <div class="hero-actions">
+            <a href="#menu-section" class="btn-primary">View Menu →</a>
+            <a href="#location-section" class="btn-secondary">Find Us</a>
         </div>
 
-</section>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-num">1998</span>
+                <span class="stat-label">Serving since</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">4.9</span>
+                <span class="stat-label">Guest rating</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-num">3</span>
+                <span class="stat-label">Cuisines, one house</span>
+            </div>
+        </div>
+    </section>
 
-<script src="script.js"></script>
+    <!-- Atmosphere Story Card -->
+    <section class="story-banner" id="story-section">
+        <div class="story-image-card">
+            <div class="story-overlay">
+                <h2>"Where the jebena meets the flame grill."</h2>
+            </div>
+        </div>
+        <div class="story-content">
+            <span class="section-tag">OUR STORY</span>
+            <h2>A house of two <span class="highlight">fires.</span></h2>
+            <p>In Dukem, we grew up between the aroma of freshly roasted coffee and the hiss of a hot grill. Tinsae opened this house to serve both — the raw, sacred cuts of kurt and ketfo prepared the way our grandmothers taught, alongside the burgers and pizzas that the new generation of Dukem craves.</p>
+            <p>Every plate begins the same way: fire, salt, spice, patience. What follows is up to your appetite.</p>
+            <div class="feature-pills">
+                <span>Local sourcing</span>
+                <span>Hand-cut daily</span>
+                <span>Wood-fired</span>
+            </div>
+        </div>
+    </section>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    <!-- Interactive Menu Section (Powered by Firebase) -->
+    <section class="menu-container" id="menu-section">
+        <div class="menu-header">
+            <span class="section-tag">THE MENU</span>
+            <h2>Three worlds, one kitchen.</h2>
+        </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
-      authDomain: "bistro-reality.firebaseapp.com",
-      projectId: "bistro-reality",
-      storageBucket: "bistro-reality.firebasestorage.app",
-      messagingSenderId: "3168029834",
-      appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
-    };
+        <h3 class="category-title">Popular Dishes</h3>
+        <div class="cards-grid" id="food-container">
+            <p id="loading-text" class="loading-state">Loading fresh menu from database...</p>
+        </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        <h3 class="category-title" style="margin-top: 50px;">Refreshing Drinks</h3>
+        <div class="cards-grid" id="drink-container"></div>
+    </section>
 
-    async function loadPublicMenu() {
-        const foodContainer = document.getElementById("food-container");
-        const drinkContainer = document.getElementById("drink-container");
-        const loadingText = document.getElementById("loading-text");
+    <!-- Location & Contact Section -->
+    <section class="location-section" id="location-section">
+        <span class="section-tag">FIND US</span>
+        <h2>Come to Dukem.</h2>
+        <p class="location-sub">On the Addis–Adama road, 37 km south of the capital. Look for the copper sign and the smoke.</p>
 
-        try {
-            const querySnapshot = await getDocs(collection(db, "menuItems"));
-            
-            if (loadingText) loadingText.remove();
+        <div class="info-list">
+            <div class="info-item">
+                <strong>Address</strong>
+                <p>Main St, Dukem, Oromia, Ethiopia</p>
+            </div>
+            <div class="info-item">
+                <strong>Hours</strong>
+                <p>Mon–Sun · 11:00 — 23:00</p>
+            </div>
+            <div class="info-item">
+                <strong>Phone</strong>
+                <p>+251 91 234 5678</p>
+            </div>
+        </div>
+    </section>
 
-            if (querySnapshot.empty) {
-                foodContainer.innerHTML = "<p style='text-align:center; width:100%;'>No items found. Go to the Admin Dashboard to add dishes!</p>";
-                return;
-            }
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">
+            <span class="logo-icon">D</span> Dukem
+        </div>
+        <p class="footer-sub">Tinsae Kurt & Ketfo · Burger & Pizza</p>
+        <p class="copyright">© 2026 Dukem. All rights reserved.</p>
+    </footer>
 
-            querySnapshot.forEach((doc) => {
-                const item = doc.data();
-                const cardHtml = `
-                    <div class="card">
-                        <img src="${item.Image}" alt="${item.Name}">
-                        <h3>${item.Name}</h3>
-                        <p>${item.Description}</p>
-                        <div class="bottom">
-                            <span>$${item.Price}</span>
-                            <button onclick="viewAR('${item.Model}')">View in AR</button>
-                        </div>
-                    </div>
-                `;
+    <script src="script.js"></script>
+
+    <!-- Firebase Dynamic Data Fetcher -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
+          authDomain: "bistro-reality.firebaseapp.com",
+          projectId: "bistro-reality",
+          storageBucket: "bistro-reality.firebasestorage.app",
+          messagingSenderId: "3168029834",
+          appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadPublicMenu() {
+            const foodContainer = document.getElementById("food-container");
+            const drinkContainer = document.getElementById("drink-container");
+            const loadingText = document.getElementById("loading-text");
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "menuItems"));
                 
-                // Sort by Category
-                if (item.Category === "Drink") {
-                    drinkContainer.innerHTML += cardHtml;
-                } else {
-                    foodContainer.innerHTML += cardHtml; // Defaults everything else to Food
-                }
-            });
-        } catch (error) {
-            console.error("Database loading error:", error);
-            foodContainer.innerHTML = "<p style='text-align:center; width:100%;'>Error loading menu database.</p>";
-        }
-    }
+                if (loadingText) loadingText.remove();
 
-    loadPublicMenu();
-</script>
+                if (querySnapshot.empty) {
+                    foodContainer.innerHTML = "<p class='empty-state'>No items found. Go to the Admin Dashboard to add dishes!</p>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const item = doc.data();
+                    const cardHtml = `
+                        <div class="dukem-card">
+                            <div class="card-image-wrap">
+                                <img src="${item.Image}" alt="${item.Name}">
+                                <span class="badge-tag">${item.Category || 'TRADITIONAL'}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-header">
+                                    <h3>${item.Name}</h3>
+                                    <span class="price">${item.Price.includes('ETB') || item.Price.includes('$') ? item.Price : item.Price + ' ETB'}</span>
+                                </div>
+                                <p class="card-desc">${item.Description}</p>
+                                <button class="ar-btn" onclick="viewAR('${item.Model}')">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
+                                    View in AR
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (item.Category === "Drink") {
+                        drinkContainer.innerHTML += cardHtml;
+                    } else {
+                        foodContainer.innerHTML += cardHtml;
+                    }
+                });
+            } catch (error) {
+                console.error("Database loading error:", error);
+                foodContainer.innerHTML = "<p class='error-state'>Error loading menu database.</p>";
+            }
+        }
+
+        loadPublicMenu();
+    </script>
 
 </body>
 </html>
