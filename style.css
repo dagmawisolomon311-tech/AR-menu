@@ -488,8 +488,18 @@ footer {
     color: var(--primary-orange);
 }
 
-@media (max-width: 600px) {
-    nav { /* or whatever class your navigation container uses, like .nav-links */
-        gap: 8px !important; /* Reduces space between items */
+@media (max-width: 768px) {
+    header {
+        flex-wrap: wrap !important;
+    }
+    
+    /* Forces the navigation menu to drop down and take up its own full row */
+    nav {
+        order: 3 !important;
+        width: 100% !important;
+        margin-top: 15px !important;
+        justify-content: center !important; 
+        gap: 20px !important; /* Adjust space between links if needed */
     }
 }
+
