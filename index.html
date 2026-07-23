@@ -156,25 +156,30 @@
                 }
 
                 querySnapshot.forEach((doc) => {
-                    const item = doc.data();
-                    const cardHtml = `
-                        <div class="dukem-card">
-                            <div class="card-image-wrap">
-                                <img src="${item.Image}" alt="${item.Name}">
-                                <span class="badge-tag">${item.Category || 'TRADITIONAL'}</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="card-header">
-                                    <h3>${item.Name}</h3>
-                                    <span class="price">${item.Price.includes('ETB') || item.Price.includes('$') ? item.Price : item.Price + ' ETB'}</span>
-                                </div>
-                                <p class="card-desc">${item.Description}</p>
-                                <button class="ar-btn" onclick="viewAR('${item.Model}')">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
-                                    View in AR
-                                </button>
-                            </div>
-                        </div>
+    const item = doc.data();
+    
+    // THIS IS THE NEW LINE: If the item is marked as hidden, skip it and don't draw the card
+    if (item.hidden === true) return; 
+
+    const cardHtml = `
+        <div class="dukem-card">
+            <div class="card-image-wrap">
+                <img src="${item.Image}" alt="${item.Name}">
+                <span class="badge-tag">${item.Category || 'TRADITIONAL'}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-header">
+                    <h3>${item.Name}</h3>
+                    <span class="price">${item.Price.includes('ETB') || item.Price.includes('$') ? item.Price : item.Price + ' ETB'}</span>
+                </div>
+                <p class="card-desc">${item.Description}</p>
+                <button class="ar-btn" onclick="viewAR('${item.Model}')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
+                    View in AR
+                </button>
+            </div>
+        </div>
+
                     `;
                     
                     if (item.Category === "Drink") {
