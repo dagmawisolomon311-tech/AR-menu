@@ -17,39 +17,42 @@
             <span class="logo-icon">D</span> Dukem
         </div>
         <nav>
-            <a href="index.html" class="active">Home</a>
-            <a href="#menu-section">Menu</a>
-            <a href="#story-section">Story</a>
+            <a href="index.html" class="active" data-i18n="nav-home">Home</a>
+            <a href="#menu-section" data-i18n="nav-menu">Menu</a>
+            <a href="#story-section" data-i18n="nav-story">Story</a>
             <a href="admin.html" class="admin-link">⚙️ Admin</a>
         </nav>
-        <button class="visit-btn" onclick="document.getElementById('location-section').scrollIntoView({behavior: 'smooth'})">Visit Us</button>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button id="lang-btn" class="lang-btn">🇪🇹 አማርኛ</button>
+            <button class="visit-btn" onclick="document.getElementById('location-section').scrollIntoView({behavior: 'smooth'})" data-i18n="btn-visit">Visit Us</button>
+        </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="location-badge">• DUKEM · ETHIOPIA</div>
-        <h1>Tinsae <span class="highlight">Kurt</span> & <i>Ketfo</i>, Burger & <span class="highlight">Pizza</span></h1>
-        <p class="hero-subtext">Authentic kurt & ketfo carved from Ethiopian tradition, next to flame-grilled burgers and wood-fired pizza. Two worlds. One table.</p>
+        <h1 data-i18n="hero-title">Tinsae <span class="highlight">Kurt</span> & <i>Ketfo</i>, Burger & <span class="highlight">Pizza</span></h1>
+        <p class="hero-subtext" data-i18n="hero-subtext">Authentic kurt & ketfo carved from Ethiopian tradition, next to flame-grilled burgers and wood-fired pizza. Two worlds. One table.</p>
         
         <div class="hero-actions">
-            <a href="#menu-section" class="btn-primary">View Menu →</a>
-            <a href="#location-section" class="btn-secondary">Find Us</a>
+            <a href="#menu-section" class="btn-primary" data-i18n="btn-menu">View Menu →</a>
+            <a href="#location-section" class="btn-secondary" data-i18n="btn-find">Find Us</a>
         </div>
 
         <div class="stats-grid">
             <div class="stat-item">
                 <span class="stat-num">1998</span>
-                <span class="stat-label">Serving since</span>
+                <span class="stat-label" data-i18n="stat-1">Serving since</span>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
                 <span class="stat-num">4.9</span>
-                <span class="stat-label">Guest rating</span>
+                <span class="stat-label" data-i18n="stat-2">Guest rating</span>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
                 <span class="stat-num">3</span>
-                <span class="stat-label">Cuisines, one house</span>
+                <span class="stat-label" data-i18n="stat-3">Cuisines, one house</span>
             </div>
         </div>
     </section>
@@ -58,62 +61,59 @@
     <section class="story-banner" id="story-section">
         <div class="story-image-card">
             <div class="story-overlay">
-                <h2>"Where the jebena meets the flame grill."</h2>
+                <h2 data-i18n="story-quote">"Where the jebena meets the flame grill."</h2>
             </div>
         </div>
         <div class="story-content">
-            <span class="section-tag">OUR STORY</span>
-            <h2>A house of two <span class="highlight">fires.</span></h2>
-            <p>In Dukem, we grew up between the aroma of freshly roasted coffee and the hiss of a hot grill. Tinsae opened this house to serve both — the raw, sacred cuts of kurt and ketfo prepared the way our grandmothers taught, alongside the burgers and pizzas that the new generation of Dukem craves.</p>
-            <p>Every plate begins the same way: fire, salt, spice, patience. What follows is up to your appetite.</p>
+            <span class="section-tag" data-i18n="tag-story">OUR STORY</span>
+            <h2 data-i18n="story-title">A house of two <span class="highlight">fires.</span></h2>
+            <p data-i18n="story-p1">In Dukem, we grew up between the aroma of freshly roasted coffee and the hiss of a hot grill. Tinsae opened this house to serve both — the raw, sacred cuts of kurt and ketfo prepared the way our grandmothers taught, alongside the burgers and pizzas that the new generation of Dukem craves.</p>
+            <p data-i18n="story-p2">Every plate begins the same way: fire, salt, spice, patience. What follows is up to your appetite.</p>
             <div class="feature-pills">
-                <span>Local sourcing</span>
-                <span>Hand-cut daily</span>
-                <span>Wood-fired</span>
+                <span data-i18n="pill-1">Local sourcing</span>
+                <span data-i18n="pill-2">Hand-cut daily</span>
+                <span data-i18n="pill-3">Wood-fired</span>
             </div>
         </div>
     </section>
 
     <!-- Interactive Menu Section (Powered by Firebase) -->
     <section class="menu-container" id="menu-section">
-        <!-- Interactive Menu Section (Powered by Firebase) -->
-    <section class="menu-container" id="menu-section">
         <div class="menu-header" style="text-align: center;">
-            <span class="section-tag">THE MENU</span>
-            <h2>Three worlds, one kitchen.</h2>
+            <span class="section-tag" data-i18n="tag-menu">THE MENU</span>
+            <h2 data-i18n="menu-title">Three worlds, one kitchen.</h2>
         </div>
 
         <!-- Category Filter Buttons -->
         <div class="menu-filter">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="Food">Food</button>
-            <button class="filter-btn" data-filter="Drink">Drink</button>
+            <button class="filter-btn active" data-filter="all" data-i18n="filter-all">All</button>
+            <button class="filter-btn" data-filter="Food" data-i18n="filter-food">Food</button>
+            <button class="filter-btn" data-filter="Drink" data-i18n="filter-drink">Drink</button>
         </div>
 
         <!-- Single Unified Grid -->
         <div class="cards-grid" id="menu-grid">
-            <p id="loading-text" class="loading-state">Loading fresh menu from database...</p>
+            <p id="loading-text" class="loading-state" data-i18n="loading">Loading fresh menu from database...</p>
         </div>
     </section>
 
-
     <!-- Location & Contact Section -->
     <section class="location-section" id="location-section">
-        <span class="section-tag">FIND US</span>
-        <h2>Come to Dukem.</h2>
-        <p class="location-sub">On the Addis–Adama road, 37 km south of the capital. Look for the copper sign and the smoke.</p>
+        <span class="section-tag" data-i18n="tag-find">FIND US</span>
+        <h2 data-i18n="location-title">Come to Dukem.</h2>
+        <p class="location-sub" data-i18n="location-sub">On the Addis–Adama road, 37 km south of the capital. Look for the copper sign and the smoke.</p>
 
         <div class="info-list">
             <div class="info-item">
-                <strong>Address</strong>
-                <p>Main St, Dukem, Oromia, Ethiopia</p>
+                <strong data-i18n="info-address">Address</strong>
+                <p data-i18n="info-address-val">Main St, Dukem, Oromia, Ethiopia</p>
             </div>
             <div class="info-item">
-                <strong>Hours</strong>
-                <p>Mon–Sun · 11:00 — 23:00</p>
+                <strong data-i18n="info-hours">Hours</strong>
+                <p data-i18n="info-hours-val">Mon–Sun · 11:00 — 23:00</p>
             </div>
             <div class="info-item">
-                <strong>Phone</strong>
+                <strong data-i18n="info-phone">Phone</strong>
                 <p>+251 91 234 5678</p>
             </div>
         </div>
@@ -124,14 +124,13 @@
         <div class="footer-logo">
             <span class="logo-icon">D</span> Dukem
         </div>
-        <p class="footer-sub">Tinsae Kurt & Ketfo · Burger & Pizza</p>
+        <p class="footer-sub" data-i18n="footer-sub">Tinsae Kurt & Ketfo · Burger & Pizza</p>
         <p class="copyright">© 2026 Dukem. All rights reserved.</p>
     </footer>
 
     <script src="script.js"></script>
 
-    <!-- Firebase Dynamic Data Fetcher -->
-    <!-- Firebase Dynamic Data Fetcher -->
+    <!-- Firebase Dynamic Data Fetcher & Translator -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
@@ -148,7 +147,68 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        let allMenuItems = []; // Store items here so we don't have to re-download when filtering
+        let allMenuItems = []; 
+
+        // --- TRANSLATION SYSTEM ---
+        const uiTranslations = {
+            en: {
+                "nav-home": "Home", "nav-menu": "Menu", "nav-story": "Story", "btn-visit": "Visit Us",
+                "hero-title": "Tinsae Kurt & Ketfo, Burger & Pizza",
+                "hero-subtext": "Authentic kurt & ketfo carved from Ethiopian tradition, next to flame-grilled burgers and wood-fired pizza. Two worlds. One table.",
+                "btn-menu": "View Menu →", "btn-find": "Find Us",
+                "stat-1": "Serving since", "stat-2": "Guest rating", "stat-3": "Cuisines, one house",
+                "story-quote": "\"Where the jebena meets the flame grill.\"", "tag-story": "OUR STORY",
+                "story-title": "A house of two fires.",
+                "story-p1": "In Dukem, we grew up between the aroma of freshly roasted coffee and the hiss of a hot grill. Tinsae opened this house to serve both — the raw, sacred cuts of kurt and ketfo prepared the way our grandmothers taught, alongside the burgers and pizzas that the new generation of Dukem craves.",
+                "story-p2": "Every plate begins the same way: fire, salt, spice, patience. What follows is up to your appetite.",
+                "pill-1": "Local sourcing", "pill-2": "Hand-cut daily", "pill-3": "Wood-fired",
+                "tag-menu": "THE MENU", "menu-title": "Three worlds, one kitchen.",
+                "filter-all": "All", "filter-food": "Food", "filter-drink": "Drink", "loading": "Loading fresh menu from database...",
+                "tag-find": "FIND US", "location-title": "Come to Dukem.",
+                "location-sub": "On the Addis–Adama road, 37 km south of the capital. Look for the copper sign and the smoke.",
+                "info-address": "Address", "info-address-val": "Main St, Dukem, Oromia, Ethiopia",
+                "info-hours": "Hours", "info-hours-val": "Mon–Sun · 11:00 — 23:00", "info-phone": "Phone",
+                "footer-sub": "Tinsae Kurt & Ketfo · Burger & Pizza", "btn-ar": "View in AR"
+            },
+            am: {
+                "nav-home": "መነሻ", "nav-menu": "ሜኑ", "nav-story": "ታሪካችን", "btn-visit": "ይጎብኙን",
+                "hero-title": "ቲንሳኤ ቁርት እና ክትፎ፣ በርገር እና ፒዛ",
+                "hero-subtext": "ከኢትዮጵያ ባህል የተገኘ እውነተኛ ቁርት እና ክትፎ ከጥብስ በርገር እና ከእንጨት እሳት ፒዛ ጋር። ሁለት ዓለማት። አንድ ገበታ።",
+                "btn-menu": "ሜኑ ይመልከቱ →", "btn-find": "አድራሻችን",
+                "stat-1": "አገልግሎት የጀመርንበት", "stat-2": "የደንበኛ ግምገማ", "stat-3": "ዓይነት ምግቦች",
+                "story-quote": "\"ጀበና ከእሳት ጋር የሚገናኝበት\"", "tag-story": "ታሪካችን",
+                "story-title": "የሁለት እሳቶች ቤት።",
+                "story-p1": "በዱከም፣ በታመሰ ቡና ጠረን እና በጋለ እሳት ድምጽ መሀል አደግን። ቲንሳኤ ይህንን ቤት የከፈተው ሁለቱንም ለማቅረብ ነው — ሴት አያቶቻችን ባስተማሩን መንገድ የተዘጋጀውን ክትፎ እና ቁርት፣ እንዲሁም አዲሱ ትውልድ የሚፈልገውን በርገር እና ፒዛ።",
+                "story-p2": "እያንዳንዱ ሳህን የሚጀምረው በተመሳሳይ መንገድ ነው፡ እሳት፣ ጨው፣ ቅመም፣ ትዕግስት። ቀጥሎ ያለው በእርስዎ ምርጫ ነው።",
+                "pill-1": "ከአካባቢው የተገኘ", "pill-2": "በየቀኑ የሚታረድ", "pill-3": "በእንጨት የተጋገረ",
+                "tag-menu": "ሜኑ", "menu-title": "ሶስት ዓለማት፣ አንድ ማዕድ ቤት።",
+                "filter-all": "ሁሉንም", "filter-food": "ምግቦች", "filter-drink": "መጠጦች", "loading": "ሜኑ ከዳታቤዝ በመጫን ላይ...",
+                "tag-find": "አድራሻችን", "location-title": "ወደ ዱከም ይምጡ።",
+                "location-sub": "በአዲስ አበባ–አዳማ መንገድ፣ ከዋና ከተማው 37 ኪ.ሜ ርቀት።",
+                "info-address": "አድራሻ", "info-address-val": "ዋና መንገድ፣ ዱከም፣ ኦሮሚያ፣ ኢትዮጵያ",
+                "info-hours": "የስራ ሰዓት", "info-hours-val": "ሰኞ–እሁድ · 11:00 — 23:00", "info-phone": "ስልክ",
+                "footer-sub": "ቲንሳኤ ቁርት እና ክትፎ · በርገር እና ፒዛ", "btn-ar": "በ AR ይመልከቱ"
+            }
+        };
+
+        let currentGlobalLang = 'en'; 
+        let currentCategoryFilter = 'all';
+
+        document.getElementById('lang-btn').addEventListener('click', () => {
+            currentGlobalLang = currentGlobalLang === 'en' ? 'am' : 'en';
+            document.getElementById('lang-btn').innerText = currentGlobalLang === 'en' ? '🇪🇹 አማርኛ' : '🇬🇧 English';
+            
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (uiTranslations[currentGlobalLang][key]) {
+                    element.innerHTML = uiTranslations[currentGlobalLang][key];
+                }
+            });
+
+            window.renderMenu(currentCategoryFilter);
+        });
+        // --- END TRANSLATION SYSTEM ---
+
 
         async function loadPublicMenu() {
             const menuGrid = document.getElementById("menu-grid");
@@ -160,19 +220,18 @@
                 if (loadingText) loadingText.remove();
 
                 if (querySnapshot.empty) {
-                    menuGrid.innerHTML = "<p class='empty-state'>No items found. Go to the Admin Dashboard to add dishes!</p>";
+                    menuGrid.innerHTML = "<p class='empty-state'>No items found.</p>";
                     return;
                 }
 
-                // Clear the array and load fresh data
                 allMenuItems = [];
                 querySnapshot.forEach((doc) => {
                     const item = doc.data();
-                    if (item.hidden === true) return; // Skip hidden items
+                    if (item.hidden === true) return; 
                     allMenuItems.push(item);
                 });
 
-                renderMenu("all"); // Render everything at first
+                renderMenu("all"); 
                 
             } catch (error) {
                 console.error("Database loading error:", error);
@@ -180,12 +239,11 @@
             }
         }
 
-        // Function to draw cards based on the selected category
         window.renderMenu = function(categoryFilter) {
+            currentCategoryFilter = categoryFilter;
             const menuGrid = document.getElementById("menu-grid");
-            menuGrid.innerHTML = ""; // Clear current cards
+            menuGrid.innerHTML = ""; 
 
-            // Filter the items array based on what button was clicked
             const filteredItems = categoryFilter === "all" 
                 ? allMenuItems 
                 : allMenuItems.filter(item => item.Category === categoryFilter);
@@ -195,23 +253,27 @@
                 return;
             }
 
-            // Draw the filtered items
             filteredItems.forEach((item) => {
+                // Dual Language Checker for Firebase Database Fields
+                const displayName = (currentGlobalLang === 'am' && item.NameAm) ? item.NameAm : item.Name;
+                const displayDesc = (currentGlobalLang === 'am' && item.DescriptionAm) ? item.DescriptionAm : item.Description;
+                const btnText = uiTranslations[currentGlobalLang]["btn-ar"];
+
                 const cardHtml = `
                     <div class="dukem-card">
                         <div class="card-image-wrap">
-                            <img src="${item.Image}" alt="${item.Name}">
+                            <img src="${item.Image}" alt="${displayName}">
                             <span class="badge-tag">${item.Category || 'TRADITIONAL'}</span>
                         </div>
                         <div class="card-body">
                             <div class="card-header">
-                                <h3>${item.Name}</h3>
+                                <h3>${displayName}</h3>
                                 <span class="price">${item.Price.includes('ETB') || item.Price.includes('$') ? item.Price : item.Price + ' ETB'}</span>
                             </div>
-                            <p class="card-desc">${item.Description}</p>
+                            <p class="card-desc">${displayDesc}</p>
                             <button class="ar-btn" onclick="viewAR('${item.Model}')">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
-                                View in AR
+                                ${btnText}
                             </button>
                         </div>
                     </div>
@@ -220,24 +282,16 @@
             });
         }
 
-        // Setup filter button clicks
         document.querySelectorAll('.filter-btn').forEach(button => {
             button.addEventListener('click', (e) => {
-                // 1. Remove "active" glowing style from all buttons
                 document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-                
-                // 2. Add "active" glowing style to the clicked button
                 e.target.classList.add('active');
-                
-                // 3. Get the category (all, Food, or Drink) and render
                 const selectedCategory = e.target.getAttribute('data-filter');
                 window.renderMenu(selectedCategory);
             });
         });
 
-        // Start by loading the menu from Firebase
         loadPublicMenu();
     </script>
-
 </body>
 </html>
