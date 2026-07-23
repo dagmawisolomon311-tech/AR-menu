@@ -488,18 +488,22 @@ footer {
     color: var(--primary-orange);
 }
 
+/* Mobile Header and Navigation Fix */
 @media (max-width: 768px) {
     header {
+        display: flex !important;
         flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
     }
     
-    /* Forces the navigation menu to drop down and take up its own full row */
-    nav {
+    /* Forces the navigation links to move to their own neat row underneath the logo and language button */
+    header nav, .nav-links {
         order: 3 !important;
         width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
         margin-top: 15px !important;
-        justify-content: center !important; 
-        gap: 20px !important; /* Adjust space between links if needed */
+        gap: 15px !important;
     }
 }
-
