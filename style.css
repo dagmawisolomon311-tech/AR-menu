@@ -424,3 +424,42 @@ footer {
     .stats-grid { flex-direction: column; align-items: flex-start; gap: 15px; }
     .stat-divider { display: none; }
 }
+/* Menu Filters */
+.menu-filter {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: transparent;
+    color: var(--text-white);
+    border: 1px solid var(--border-color);
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: var(--font-sans);
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-orange);
+}
+
+.filter-btn.active {
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    grid-column: 1 / -1;
+    color: var(--text-muted);
+    padding: 40px;
+}
+
