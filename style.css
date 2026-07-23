@@ -471,4 +471,20 @@ footer {
     color: var(--text-muted);
     padding: 40px;
 }
+.lang-btn {
+    background: transparent;
+    color: var(--text-white);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.lang-btn:hover {
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
+}
 
