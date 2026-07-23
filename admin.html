@@ -26,6 +26,12 @@
     #loginArea { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
     .login-box { background: var(--card-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; width: 100%; max-width: 400px; }
     
+    /* Show/Hide Password Container */
+    .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+    .password-wrapper input { padding-right: 45px; } /* Leave space for the eye icon */
+    .toggle-password { position: absolute; right: 15px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; outline: none; }
+    .toggle-password:hover { color: var(--text-white); }
+    
     /* Dashboard Styles */
     #dashboardArea { display: none; }
     .admin-container { padding: 40px 20px; max-width: 800px; margin: auto; }
@@ -61,8 +67,9 @@
     <div id="loginArea">
         <div class="login-box">
             <h2>Admin Access</h2>
-            <div class="form-group">
+            <div class="form-group password-wrapper">
                 <input type="password" id="admin-pass" placeholder="Enter Password">
+                <button type="button" class="toggle-password" id="toggle-pass">👁️</button>
             </div>
             <button class="login-btn" id="login-btn">Login</button>
             <p id="login-error" style="color: #dc2626; display: none; margin-top: 10px;">Incorrect password.</p>
@@ -111,7 +118,6 @@
     <!-- Firebase Dynamic Data Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        // NOTE: I added getDoc here so the edit button can fetch the single item!
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -126,15 +132,27 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // --- LOGIN LOGIC ---
+        // --- LOGIN & SHOW/HIDE PASSWORD LOGIC ---
         const ADMIN_PASSWORD = "eagle"; // CHANGE THIS TO YOUR ACTUAL PASSWORD
+        const passInput = document.getElementById('admin-pass');
+        const toggleBtn = document.getElementById('toggle-pass');
+
+        // Toggle visibility
+        toggleBtn.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggleBtn.innerText = '🙈'; // Change icon when showing
+            } else {
+                passInput.type = 'password';
+                toggleBtn.innerText = '👁️'; // Change icon back when hidden
+            }
+        });
 
         document.getElementById('login-btn').addEventListener('click', () => {
-            const enteredPass = document.getElementById('admin-pass').value;
-            if(enteredPass === ADMIN_PASSWORD) {
+            if(passInput.value === ADMIN_PASSWORD) {
                 document.getElementById('loginArea').style.display = 'none';
                 document.getElementById('dashboardArea').style.display = 'block';
-                loadAdminMenu(); // Only load the database after they log in
+                loadAdminMenu(); 
             } else {
                 document.getElementById('login-error').style.display = 'block';
             }
@@ -181,7 +199,6 @@
                             <p>${item.Price} | ${item.Category}</p>
                         </div>
                         <div class="item-actions">
-                            <!-- Restored the Edit Button -->
                             <button class="btn-edit" onclick="editItem('${id}')">Edit</button>
                             <button class="btn-hide" onclick="toggleHide('${id}', ${item.hidden || false})">${visibilityText}</button>
                             <button class="btn-delete" onclick="deleteItem('${id}')">Delete</button>
@@ -192,7 +209,7 @@
             });
         }
 
-        // Restored Edit Item Function
+        // Edit Item Function
         window.editItem = async function(id) {
             try {
                 const docRef = doc(db, "menuItems", id);
@@ -201,7 +218,6 @@
                 if (docSnap.exists()) {
                     const item = docSnap.data();
                     
-                    // Fill the form inputs with the existing database info
                     catInput.value = item.Category || "Food";
                     nameInput.value = item.Name || "";
                     nameAmInput.value = item.NameAm || "";
@@ -213,12 +229,10 @@
                     
                     editingId = id;
                     
-                    // Change the button and title text to show we are editing
                     document.getElementById("form-title").innerText = "Edit Dish";
                     saveBtn.innerText = "Update Dish";
                     cancelBtn.style.display = "block";
                     
-                    // Scroll to the top of the page smoothly so you see the form
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             } catch (error) {
