@@ -507,3 +507,40 @@ footer {
         gap: 15px !important;
     }
 }
+
+/* Light Mode Variables */
+body.light-mode {
+    --bg-dark: #fbf7f5;       /* Soft off-white background */
+    --card-bg: #ffffff;       /* Pure white for cards */
+    --border-color: #e5e7eb;  /* Light gray borders */
+    --text-white: #1a1310;    /* Dark brown/black text */
+    --text-muted: #6b7280;    /* Medium gray text */
+}
+
+/* Theme Toggle Button Styling */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-white);
+    padding: 8px 12px;
+    border-radius: 20px; /* Nice rounded pill shape */
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--card-bg);
+}
+
+/* Ensures the header layout fits the new button */
+@media (max-width: 768px) {
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+}
