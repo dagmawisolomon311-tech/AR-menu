@@ -13,20 +13,22 @@
 
     <!-- Header Navigation -->
     <header>
-        <div class="logo">
-            <span class="logo-icon">D</span> Dukem
-        </div>
-        <nav>
-            <a href="index.html" class="active" data-i18n="nav-home">Home</a>
-            <a href="#menu-section" data-i18n="nav-menu">Menu</a>
-            <a href="#story-section" data-i18n="nav-story">Story</a>
-            <a href="admin.html" class="admin-link">⚙️ Admin</a>
-        </nav>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button id="lang-btn" class="lang-btn">🇪🇹 አማርኛ</button>
-            <button class="visit-btn" onclick="document.getElementById('location-section').scrollIntoView({behavior: 'smooth'})" data-i18n="btn-visit">Visit Us</button>
-        </div>
-    </header>
+    <div class="logo">D Dukem</div>
+    
+    <nav class="nav-links">
+        <a href="#home" data-en="Home" data-am="መነሻ">Home</a>
+        <a href="#menu" data-en="Menu" data-am="ሜኑ">Menu</a>
+        <a href="#story" data-en="Story" data-am="ታሪካችን">Story</a>
+        <a href="admin.html">⚙️ Admin</a>
+    </nav>
+
+    <!-- Wrapper for buttons so they stay together -->
+    <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
+        <button id="theme-btn" class="theme-toggle">☀️</button>
+        <button id="lang-btn" class="language-btn">🇪🇹 አማርኛ</button>
+    </div>
+</header>
+
 
     <!-- Hero Section -->
     <section class="hero">
@@ -292,6 +294,29 @@
         });
 
         loadPublicMenu();
+    const themeBtn = document.getElementById('theme-btn');
+    const body = document.body;
+
+    // 1. Check if the user already chose a theme in a previous visit
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'light') {
+        body.classList.add('light-mode');
+        themeBtn.innerText = '🌙'; // Change icon to moon
+    }
+
+    // 2. Toggle the theme when the button is clicked
+    themeBtn.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        
+        // Check if light mode is now active
+        if (body.classList.contains('light-mode')) {
+            localStorage.setItem('theme', 'light'); // Save preference
+            themeBtn.innerText = '🌙'; // Switch icon to moon
+        } else {
+            localStorage.setItem('theme', 'dark'); // Save preference
+            themeBtn.innerText = '☀️'; // Switch icon to sun
+        }
+    });
     </script>
 </body>
 </html>
