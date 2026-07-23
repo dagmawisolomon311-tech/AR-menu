@@ -260,9 +260,18 @@ nav a:hover, nav a.active {
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* This forces exactly 2 items per row */
+    grid-template-columns: repeat(2, 1fr); 
     gap: 24px;
 }
+
+/* Optional: If you want it to go back to 1 item per row ONLY on very small mobile phones so it isn't too squished */
+@media(max-width: 600px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 /* Custom Dukem Card Styling */
 .dukem-card {
