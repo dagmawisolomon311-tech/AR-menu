@@ -15,12 +15,19 @@
         --primary-orange: #ea580c;
         --text-white: #fbf7f5;
         --text-muted: #a3948c;
+        --success: #16a34a;
         --font-sans: 'Plus Jakarta Sans', sans-serif;
     }
     body { font-family: var(--font-sans); background: var(--bg-dark); color: var(--text-white); margin: 0; padding: 0;}
     header { background: rgba(15, 10, 8, 0.9); padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;}
     header a { text-decoration: none; color: var(--primary-orange); font-weight: 600; }
     
+    /* Login Screen Styles */
+    #loginArea { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
+    .login-box { background: var(--card-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; width: 100%; max-width: 400px; }
+    
+    /* Dashboard Styles */
+    #dashboardArea { display: none; }
     .admin-container { padding: 40px 20px; max-width: 800px; margin: auto; }
     
     .form-card { background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 40px; }
@@ -28,8 +35,8 @@
     input, select { width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; color: white; font-family: var(--font-sans); box-sizing: border-box;}
     input::placeholder { color: var(--text-muted); }
     
-    .save-btn { background: var(--primary-orange); color: white; padding: 14px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.3s;}
-    .save-btn:hover { background: #c2410c; }
+    .save-btn, .login-btn { background: var(--primary-orange); color: white; padding: 14px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.3s;}
+    .save-btn:hover, .login-btn:hover { background: #c2410c; }
     .cancel-btn { background: transparent; color: var(--text-muted); padding: 14px; border: 1px solid var(--text-muted); border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; display: none; }
     
     /* List styling */
@@ -50,46 +57,62 @@
         <a href="index.html">← Back to Website</a>
     </header>
 
-    <div class="admin-container">
-        
-        <!-- Add / Edit Form -->
-        <div class="form-card">
-            <h2 id="form-title">Add New Dish</h2>
-            
+    <!-- Password Login Screen -->
+    <div id="loginArea">
+        <div class="login-box">
+            <h2>Admin Access</h2>
             <div class="form-group">
-                <select id="category">
-                    <option value="Food">Food</option>
-                    <option value="Drink">Drink</option>
-                </select>
+                <input type="password" id="admin-pass" placeholder="Enter Password">
             </div>
-            
-            <div class="form-group"><input type="text" id="name" placeholder="English Name (e.g. Tere Siga)"></div>
-            <div class="form-group"><input type="text" id="nameAm" placeholder="Amharic Name (e.g. ጥሬ ሥጋ)"></div>
-            
-            <div class="form-group"><input type="text" id="desc" placeholder="English Description"></div>
-            <div class="form-group"><input type="text" id="descAm" placeholder="Amharic Description (ማብራሪያ)"></div>
-            
-            <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 480 ETB)"></div>
-            <div class="form-group"><input type="text" id="img" placeholder="Image File URL (e.g. kurt.jpg)"></div>
-            <div class="form-group"><input type="text" id="model" placeholder="3D Model File URL (e.g. kurt.glb)"></div>
-            
-            <button class="save-btn" id="save-btn">Save Dish</button>
-            <button class="cancel-btn" id="cancel-btn">Cancel Edit</button>
-            <p id="status-msg" style="color: var(--success); text-align: center; display: none;">Saved successfully!</p>
+            <button class="login-btn" id="login-btn">Login</button>
+            <p id="login-error" style="color: #dc2626; display: none; margin-top: 10px;">Incorrect password.</p>
         </div>
+    </div>
 
-        <!-- List of Existing Items -->
-        <h2>Current Menu Items</h2>
-        <div class="admin-list" id="admin-menu-list">
-            <p>Loading items...</p>
+    <!-- Main Dashboard Area (Hidden until logged in) -->
+    <div id="dashboardArea">
+        <div class="admin-container">
+            
+            <!-- Add / Edit Form -->
+            <div class="form-card">
+                <h2 id="form-title">Add New Dish</h2>
+                
+                <div class="form-group">
+                    <select id="category">
+                        <option value="Food">Food</option>
+                        <option value="Drink">Drink</option>
+                    </select>
+                </div>
+                
+                <div class="form-group"><input type="text" id="name" placeholder="English Name (e.g. Tere Siga)"></div>
+                <div class="form-group"><input type="text" id="nameAm" placeholder="Amharic Name (e.g. ጥሬ ሥጋ)"></div>
+                
+                <div class="form-group"><input type="text" id="desc" placeholder="English Description"></div>
+                <div class="form-group"><input type="text" id="descAm" placeholder="Amharic Description (ማብራሪያ)"></div>
+                
+                <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 480 ETB)"></div>
+                <div class="form-group"><input type="text" id="img" placeholder="Image File URL (e.g. kurt.jpg)"></div>
+                <div class="form-group"><input type="text" id="model" placeholder="3D Model File URL (e.g. kurt.glb)"></div>
+                
+                <button class="save-btn" id="save-btn">Save Dish</button>
+                <button class="cancel-btn" id="cancel-btn">Cancel Edit</button>
+                <p id="status-msg" style="color: var(--success); text-align: center; display: none; margin-top: 10px;">Saved successfully!</p>
+            </div>
+
+            <!-- List of Existing Items -->
+            <h2>Current Menu Items</h2>
+            <div class="admin-list" id="admin-menu-list">
+                <p>Loading items...</p>
+            </div>
+
         </div>
-
     </div>
 
     <!-- Firebase Dynamic Data Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        // NOTE: I added getDoc here so the edit button can fetch the single item!
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
@@ -103,7 +126,22 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        let editingId = null; // Keeps track of if we are editing an existing item
+        // --- LOGIN LOGIC ---
+        const ADMIN_PASSWORD = "yourpassword123"; // CHANGE THIS TO YOUR ACTUAL PASSWORD
+
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const enteredPass = document.getElementById('admin-pass').value;
+            if(enteredPass === ADMIN_PASSWORD) {
+                document.getElementById('loginArea').style.display = 'none';
+                document.getElementById('dashboardArea').style.display = 'block';
+                loadAdminMenu(); // Only load the database after they log in
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
+        // --- END LOGIN LOGIC ---
+
+        let editingId = null; 
 
         // Form Fields
         const catInput = document.getElementById("category");
@@ -143,6 +181,8 @@
                             <p>${item.Price} | ${item.Category}</p>
                         </div>
                         <div class="item-actions">
+                            <!-- Restored the Edit Button -->
+                            <button class="btn-edit" onclick="editItem('${id}')">Edit</button>
                             <button class="btn-hide" onclick="toggleHide('${id}', ${item.hidden || false})">${visibilityText}</button>
                             <button class="btn-delete" onclick="deleteItem('${id}')">Delete</button>
                         </div>
@@ -152,7 +192,42 @@
             });
         }
 
-        // Save Button Logic (Handles both Adding and Editing)
+        // Restored Edit Item Function
+        window.editItem = async function(id) {
+            try {
+                const docRef = doc(db, "menuItems", id);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const item = docSnap.data();
+                    
+                    // Fill the form inputs with the existing database info
+                    catInput.value = item.Category || "Food";
+                    nameInput.value = item.Name || "";
+                    nameAmInput.value = item.NameAm || "";
+                    descInput.value = item.Description || "";
+                    descAmInput.value = item.DescriptionAm || "";
+                    priceInput.value = item.Price || "";
+                    imgInput.value = item.Image || "";
+                    modelInput.value = item.Model || "";
+                    
+                    editingId = id;
+                    
+                    // Change the button and title text to show we are editing
+                    document.getElementById("form-title").innerText = "Edit Dish";
+                    saveBtn.innerText = "Update Dish";
+                    cancelBtn.style.display = "block";
+                    
+                    // Scroll to the top of the page smoothly so you see the form
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (error) {
+                console.error("Error fetching document:", error);
+                alert("Failed to load item for editing.");
+            }
+        }
+
+        // Save Button Logic 
         saveBtn.addEventListener("click", async () => {
             if(!nameInput.value || !priceInput.value) {
                 alert("Please fill in at least the English name and price.");
@@ -164,9 +239,9 @@
             const itemData = {
                 Category: catInput.value,
                 Name: nameInput.value,
-                NameAm: nameAmInput.value, // Saves Amharic Name
+                NameAm: nameAmInput.value, 
                 Description: descInput.value,
-                DescriptionAm: descAmInput.value, // Saves Amharic Description
+                DescriptionAm: descAmInput.value, 
                 Price: priceInput.value,
                 Image: imgInput.value,
                 Model: modelInput.value,
@@ -199,7 +274,7 @@
             }
         }
 
-        // Hide/Unhide Item (Useful for skipping items in index.html)
+        // Hide/Unhide Item 
         window.toggleHide = async function(id, currentStatus) {
             await updateDoc(doc(db, "menuItems", id), {
                 hidden: !currentStatus
@@ -220,8 +295,6 @@
 
         cancelBtn.addEventListener("click", resetForm);
 
-        // Run on load
-        loadAdminMenu();
     </script>
 </body>
 </html>
