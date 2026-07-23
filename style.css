@@ -488,3 +488,8 @@ footer {
     color: var(--primary-orange);
 }
 
+@media (max-width: 600px) {
+    nav { /* or whatever class your navigation container uses, like .nav-links */
+        gap: 8px !important; /* Reduces space between items */
+    }
+}
