@@ -14,126 +14,148 @@
 
     <!-- Header Navigation -->
     <header>
-    <div class="logo">D Dukem</div>
-    
-    <nav class="nav-links">
-        <a href="#home" data-en="Home" data-am="መነሻ">Home</a>
-        <a href="#menu-section" data-en="Menu" data-am="ሜኑ">Menu</a>
-        <a href="#story-section" data-en="Story" data-am="ታሪካችን">Story</a>
-        <a href="admin.html">⚙️ Admin</a>
-    </nav>
-
-    <!-- Wrapper for buttons so they stay together -->
-    <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
-        <button id="theme-btn" class="theme-toggle">☀️</button>
-        <button id="lang-btn" class="language-btn">🇪🇹 አማርኛ</button>
-    </div>
-</header>
-
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="location-badge">• DUKEM · ETHIOPIA</div>
-        <h1 data-i18n="hero-title">Tinsae <span class="highlight">Kurt</span> & <i>Ketfo</i>, Burger & <span class="highlight">Pizza</span></h1>
-        <p class="hero-subtext" data-i18n="hero-subtext">Authentic kurt & ketfo carved from Ethiopian tradition, next to flame-grilled burgers and wood-fired pizza. Two worlds. One table.</p>
+        <div class="logo">D Dukem</div>
         
-        <div class="hero-actions">
-            <a href="#menu-section" class="btn-primary" data-i18n="btn-menu">View Menu →</a>
-            <a href="#location-section" class="btn-secondary" data-i18n="btn-find">Find Us</a>
-        </div>
+        <nav class="nav-links">
+            <a href="#home" data-en="Home" data-am="መነሻ">Home</a>
+            <a href="#menu-section" data-en="Menu" data-am="ሜኑ">Menu</a>
+            <a href="#story-section" data-en="Story" data-am="ታሪካችን">Story</a>
+            <a href="admin.html">⚙️ Admin</a>
+        </nav>
 
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-num">1998</span>
-                <span class="stat-label" data-i18n="stat-1">Serving since</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-                <span class="stat-num">4.9</span>
-                <span class="stat-label" data-i18n="stat-2">Guest rating</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-                <span class="stat-num">3</span>
-                <span class="stat-label" data-i18n="stat-3">Cuisines, one house</span>
-            </div>
+        <!-- Wrapper for buttons so they stay together -->
+        <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
+            <button id="theme-btn" class="theme-toggle">☀️</button>
+            <button id="lang-btn" class="language-btn">🇪🇹 አማርኛ</button>
         </div>
-    </section>
-
-    <!-- Atmosphere Story Card -->
-    <section class="story-banner" id="story-section">
-        <div class="story-image-card">
-            <div class="story-overlay">
-                <h2 data-i18n="story-quote">"Where the jebena meets the flame grill."</h2>
-            </div>
-        </div>
-        <div class="story-content">
-            <span class="section-tag" data-i18n="tag-story">OUR STORY</span>
-            <h2 data-i18n="story-title">A house of two <span class="highlight">fires.</span></h2>
-            <p data-i18n="story-p1">In Dukem, we grew up between the aroma of freshly roasted coffee and the hiss of a hot grill. Tinsae opened this house to serve both — the raw, sacred cuts of kurt and ketfo prepared the way our grandmothers taught, alongside the burgers and pizzas that the new generation of Dukem craves.</p>
-            <p data-i18n="story-p2">Every plate begins the same way: fire, salt, spice, patience. What follows is up to your appetite.</p>
-            <div class="feature-pills">
-                <span data-i18n="pill-1">Local sourcing</span>
-                <span data-i18n="pill-2">Hand-cut daily</span>
-                <span data-i18n="pill-3">Wood-fired</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Interactive Menu Section (Powered by Firebase) -->
-    <section class="menu-container" id="menu-section">
-        <div class="menu-header" style="text-align: center;">
-            <span class="section-tag" data-i18n="tag-menu">THE MENU</span>
-            <h2 data-i18n="menu-title">Three worlds, one kitchen.</h2>
-        </div>
-
-        <!-- Category Filter Buttons -->
-        <div class="menu-filter">
-            <button class="filter-btn active" data-filter="all" data-i18n="filter-all">All</button>
-            <button class="filter-btn" data-filter="Food" data-i18n="filter-food">Food</button>
-            <button class="filter-btn" data-filter="Drink" data-i18n="filter-drink">Drink</button>
-        </div>
-
-        <!-- Single Unified Grid -->
-        <div class="cards-grid" id="menu-grid">
-            <p id="loading-text" class="loading-state" data-i18n="loading">Loading fresh menu from database...</p>
-        </div>
-    </section>
-
-    <!-- Location & Contact Section -->
-    <section class="location-section" id="location-section">
-        <span class="section-tag" data-i18n="tag-find">FIND US</span>
-        <h2 data-i18n="location-title">Come to Dukem.</h2>
-        <p class="location-sub" data-i18n="location-sub">On the Addis–Adama road, 37 km south of the capital. Look for the copper sign and the smoke.</p>
-
-        <div class="info-list">
-            <div class="info-item">
-                <strong data-i18n="info-address">Address</strong>
-                <p data-i18n="info-address-val">Main St, Dukem, Oromia, Ethiopia</p>
-            </div>
-            <div class="info-item">
-                <strong data-i18n="info-hours">Hours</strong>
-                <p data-i18n="info-hours-val">Mon–Sun · 11:00 — 23:00</p>
-            </div>
-            <div class="info-item">
-                <strong data-i18n="info-phone">Phone</strong>
-                <p>+251 91 234 5678</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-logo">
-            <span class="logo-icon">D</span> Dukem
-        </div>
-        <p class="footer-sub" data-i18n="footer-sub">Tinsae Kurt & Ketfo · Burger & Pizza</p>
-        <p class="copyright">© 2026 Dukem. All rights reserved.</p>
-    </footer>
+    </header>
 
     <!-- ========================================== -->
-    <!-- NEW MOBILE BOTTOM NAVIGATION IS RIGHT HERE -->
+    <!-- NEW CINEMATIC SCROLL HERO SECTION -->
     <!-- ========================================== -->
+    <section class="scroll-canvas-section" id="cinematic-hero">
+        <div class="sticky-container">
+            <!-- Canvas where the sequence is drawn -->
+            <canvas id="frame-canvas"></canvas>
+            
+            <!-- Floating Text Overlay -->
+            <div class="scroll-text-overlay" id="scroll-text-1">
+                <h2>SMASHED TO ORDER.</h2>
+                <p>Scroll down to build it</p>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT (Slides up after scroll finishes) -->
+    <!-- ========================================== -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="location-badge">• DUKEM · ETHIOPIA</div>
+            <h1 data-i18n="hero-title">Tinsae <span class="highlight">Kurt</span> & <i>Ketfo</i>, Burger & <span class="highlight">Pizza</span></h1>
+            <p class="hero-subtext" data-i18n="hero-subtext">Authentic kurt & ketfo carved from Ethiopian tradition, next to flame-grilled burgers and wood-fired pizza. Two worlds. One table.</p>
+            
+            <div class="hero-actions">
+                <a href="#menu-section" class="btn-primary" data-i18n="btn-menu">View Menu →</a>
+                <a href="#location-section" class="btn-secondary" data-i18n="btn-find">Find Us</a>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-num">1998</span>
+                    <span class="stat-label" data-i18n="stat-1">Serving since</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-num">4.9</span>
+                    <span class="stat-label" data-i18n="stat-2">Guest rating</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-num">3</span>
+                    <span class="stat-label" data-i18n="stat-3">Cuisines, one house</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Atmosphere Story Card -->
+        <section class="story-banner" id="story-section">
+            <div class="story-image-card">
+                <div class="story-overlay">
+                    <h2 data-i18n="story-quote">"Where the jebena meets the flame grill."</h2>
+                </div>
+            </div>
+            <div class="story-content">
+                <span class="section-tag" data-i18n="tag-story">OUR STORY</span>
+                <h2 data-i18n="story-title">A house of two <span class="highlight">fires.</span></h2>
+                <p data-i18n="story-p1">In Dukem, we grew up between the aroma of freshly roasted coffee and the hiss of a hot grill. Tinsae opened this house to serve both — the raw, sacred cuts of kurt and ketfo prepared the way our grandmothers taught, alongside the burgers and pizzas that the new generation of Dukem craves.</p>
+                <p data-i18n="story-p2">Every plate begins the same way: fire, salt, spice, patience. What follows is up to your appetite.</p>
+                <div class="feature-pills">
+                    <span data-i18n="pill-1">Local sourcing</span>
+                    <span data-i18n="pill-2">Hand-cut daily</span>
+                    <span data-i18n="pill-3">Wood-fired</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Menu Section (Powered by Firebase) -->
+        <section class="menu-container" id="menu-section">
+            <div class="menu-header" style="text-align: center;">
+                <span class="section-tag" data-i18n="tag-menu">THE MENU</span>
+                <h2 data-i18n="menu-title">Three worlds, one kitchen.</h2>
+            </div>
+
+            <!-- Category Filter Buttons -->
+            <div class="menu-filter">
+                <button class="filter-btn active" data-filter="all" data-i18n="filter-all">All</button>
+                <button class="filter-btn" data-filter="Food" data-i18n="filter-food">Food</button>
+                <button class="filter-btn" data-filter="Drink" data-i18n="filter-drink">Drink</button>
+            </div>
+
+            <!-- Single Unified Grid -->
+            <div class="cards-grid" id="menu-grid">
+                <p id="loading-text" class="loading-state" data-i18n="loading">Loading fresh menu from database...</p>
+            </div>
+        </section>
+
+        <!-- Location & Contact Section -->
+        <section class="location-section" id="location-section">
+            <span class="section-tag" data-i18n="tag-find">FIND US</span>
+            <h2 data-i18n="location-title">Come to Dukem.</h2>
+            <p class="location-sub" data-i18n="location-sub">On the Addis–Adama road, 37 km south of the capital. Look for the copper sign and the smoke.</p>
+
+            <div class="info-list">
+                <div class="info-item">
+                    <strong data-i18n="info-address">Address</strong>
+                    <p data-i18n="info-address-val">Main St, Dukem, Oromia, Ethiopia</p>
+                </div>
+                <div class="info-item">
+                    <strong data-i18n="info-hours">Hours</strong>
+                    <p data-i18n="info-hours-val">Mon–Sun · 11:00 — 23:00</p>
+                </div>
+                <div class="info-item">
+                    <strong data-i18n="info-phone">Phone</strong>
+                    <p>+251 91 234 5678</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-logo">
+                <span class="logo-icon">D</span> Dukem
+            </div>
+            <p class="footer-sub" data-i18n="footer-sub">Tinsae Kurt & Ketfo · Burger & Pizza</p>
+            <p class="copyright">© 2026 Dukem. All rights reserved.</p>
+        </footer>
+    </main>
+    <!-- ========================================== -->
+    <!-- END OF MAIN CONTENT WRAPPER -->
+    <!-- ========================================== -->
+
+    <!-- NEW MOBILE BOTTOM NAVIGATION -->
     <nav class="mobile-bottom-bar">
         <ul>
             <li><a href="#home" class="active"><span class="mobile-icon">🏠</span><span data-en="Home" data-am="መነሻ">Home</span></a></li>
@@ -142,7 +164,6 @@
             <li><a href="admin.html"><span class="mobile-icon">⚙️</span><span>Admin</span></a></li>
         </ul>
     </nav>
-    <!-- ========================================== -->
 
     <script src="script.js"></script>
 
@@ -308,66 +329,68 @@
         });
 
         loadPublicMenu();
-    const themeBtn = document.getElementById('theme-btn');
-    const body = document.body;
 
-    // 1. Check if the user already chose a theme in a previous visit
-    const currentTheme = localStorage.getItem('theme');
-    if (currentTheme === 'light') {
-        body.classList.add('light-mode');
-        themeBtn.innerText = '🌙'; // Change icon to moon
-    }
+        const themeBtn = document.getElementById('theme-btn');
+        const body = document.body;
 
-    // 2. Toggle the theme when the button is clicked
-    themeBtn.addEventListener('click', () => {
-        body.classList.toggle('light-mode');
-        
-        // Check if light mode is now active
-        if (body.classList.contains('light-mode')) {
-            localStorage.setItem('theme', 'light'); // Save preference
-            themeBtn.innerText = '🌙'; // Switch icon to moon
-        } else {
-            localStorage.setItem('theme', 'dark'); // Save preference
-            themeBtn.innerText = '☀️'; // Switch icon to sun
+        // 1. Check if the user already chose a theme in a previous visit
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'light') {
+            body.classList.add('light-mode');
+            themeBtn.innerText = '🌙'; // Change icon to moon
         }
-    });
-        // --- SCROLL SPY / AUTO-HIGHLIGHT NAV LINKS ---
-document.addEventListener("DOMContentLoaded", () => {
-    // Select all sections that have an ID
-    const sections = document.querySelectorAll("body, section[id]");
-    // Select all nav links in both desktop and mobile bars
-    const allNavLinks = document.querySelectorAll(".nav-links a, .mobile-bottom-bar a");
 
-    const observerOptions = {
-        root: null,
-        rootMargin: "-20% 0px -60% 0px", // Triggers when section is near the middle of the screen
-        threshold: 0
-    };
-
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                const currentId = entry.target.getAttribute("id");
-
-                allNavLinks.forEach((link) => {
-                    // Check if the link's href matches the section ID
-                    if (link.getAttribute("href") === `#${currentId}`) {
-                        link.classList.add("active");
-                    } else if (link.getAttribute("href").startsWith("#")) {
-                        link.classList.remove("active");
-                    }
-                });
+        // 2. Toggle the theme when the button is clicked
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            // Check if light mode is now active
+            if (body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light'); // Save preference
+                themeBtn.innerText = '🌙'; // Switch icon to moon
+            } else {
+                localStorage.setItem('theme', 'dark'); // Save preference
+                themeBtn.innerText = '☀️'; // Switch icon to sun
             }
         });
-    }, observerOptions);
 
-    // Observe each section
-    sections.forEach((section) => {
-        if (section.id) {
-            sectionObserver.observe(section);
-        }
-    });
-});
+        // --- SCROLL SPY / AUTO-HIGHLIGHT NAV LINKS ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Select all sections that have an ID
+            const sections = document.querySelectorAll("body, section[id]");
+            // Select all nav links in both desktop and mobile bars
+            const allNavLinks = document.querySelectorAll(".nav-links a, .mobile-bottom-bar a");
+
+            const observerOptions = {
+                root: null,
+                rootMargin: "-20% 0px -60% 0px", // Triggers when section is near the middle of the screen
+                threshold: 0
+            };
+
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const currentId = entry.target.getAttribute("id");
+
+                        allNavLinks.forEach((link) => {
+                            // Check if the link's href matches the section ID
+                            if (link.getAttribute("href") === `#${currentId}`) {
+                                link.classList.add("active");
+                            } else if (link.getAttribute("href").startsWith("#")) {
+                                link.classList.remove("active");
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            // Observe each section
+            sections.forEach((section) => {
+                if (section.id) {
+                    sectionObserver.observe(section);
+                }
+            });
+        });
     </script>
 </body>
 </html>
