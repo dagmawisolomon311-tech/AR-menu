@@ -740,3 +740,33 @@ body.light-mode .mobile-bottom-bar {
     background-color: #121212; /* Change this to match your website's background color */
     z-index: 20;
 }
+/* LIGHT MODE FIXES */
+body.light-mode {
+    background-color: #f8f9fa;
+    color: #1a1a1a;
+}
+
+body.light-mode h1, 
+body.light-mode h2, 
+body.light-mode h3, 
+body.light-mode h4,
+body.light-mode p,
+body.light-mode span:not(.highlight):not(.badge-tag):not(.price) {
+    color: #1a1a1a;
+}
+
+body.light-mode .hero-subtext,
+body.light-mode .location-sub,
+body.light-mode .card-desc {
+    color: #555555;
+}
+
+body.light-mode .dukem-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+}
+
+body.light-mode .info-item {
+    background-color: #ffffff;
+    border-color: #e0e0e0;
+}
