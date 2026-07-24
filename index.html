@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dukem - AR Restaurant & Lounge</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Notice I updated this to ?v=3 to beat the cache! -->
+    <link rel="stylesheet" href="style.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body id="home">
 
     <!-- Header Navigation -->
     <header>
@@ -17,8 +18,8 @@
     
     <nav class="nav-links">
         <a href="#home" data-en="Home" data-am="መነሻ">Home</a>
-        <a href="#menu" data-en="Menu" data-am="ሜኑ">Menu</a>
-        <a href="#story" data-en="Story" data-am="ታሪካችን">Story</a>
+        <a href="#menu-section" data-en="Menu" data-am="ሜኑ">Menu</a>
+        <a href="#story-section" data-en="Story" data-am="ታሪካችን">Story</a>
         <a href="admin.html">⚙️ Admin</a>
     </nav>
 
@@ -129,6 +130,19 @@
         <p class="footer-sub" data-i18n="footer-sub">Tinsae Kurt & Ketfo · Burger & Pizza</p>
         <p class="copyright">© 2026 Dukem. All rights reserved.</p>
     </footer>
+
+    <!-- ========================================== -->
+    <!-- NEW MOBILE BOTTOM NAVIGATION IS RIGHT HERE -->
+    <!-- ========================================== -->
+    <nav class="mobile-bottom-bar">
+        <ul>
+            <li><a href="#home" class="active"><span class="mobile-icon">🏠</span><span data-en="Home" data-am="መነሻ">Home</span></a></li>
+            <li><a href="#menu-section"><span class="mobile-icon">🍔</span><span data-en="Menu" data-am="ሜኑ">Menu</span></a></li>
+            <li><a href="#story-section"><span class="mobile-icon">📖</span><span data-en="Story" data-am="ታሪካችን">Story</span></a></li>
+            <li><a href="admin.html"><span class="mobile-icon">⚙️</span><span>Admin</span></a></li>
+        </ul>
+    </nav>
+    <!-- ========================================== -->
 
     <script src="script.js"></script>
 
