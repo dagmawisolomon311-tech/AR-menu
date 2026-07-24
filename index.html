@@ -402,12 +402,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const context = canvas.getContext("2d");
     
-    // 1. Set this to the total number of frame images you uploaded to GitHub!
-    const frameCount = 195; 
+    // IMPORTANT: Change 60 to the exact total number of ezgif-frame images you have!
+    const frameCount = 60; 
 
-    // 2. Matches your extracted image names (e.g., frame_0001.jpg)
+    // ✅ FIXED FILE PATH: Matches ezgif-frame-001.jpg perfectly
     const currentFrame = index => (
-        `frame_${index.toString().padStart(4, '0')}.jpg`
+        `ezgif-frame-${index.toString().padStart(3, '0')}.jpg`
     );
 
     const images = [];
@@ -419,6 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
         img.src = currentFrame(i);
         img.onload = () => {
             imagesLoaded++;
+            // Draw the very first frame to the canvas immediately
             if (imagesLoaded === 1) {
                 canvas.width = img.naturalWidth || 1080;
                 canvas.height = img.naturalHeight || 1920;
@@ -439,6 +440,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const frameIndex = Math.min(
             frameCount - 1,
+            Math.floor(progress * frameCount)
+        );
+
+        if (images[frameIndex] && images[frameIndex].complete) {
+            window.requestAnimationFrame(() => {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(images[frameIndex], 0, 0, canvas.width, canvas.height);
+            });
+        }
+
+        // Trigger text visibility
+        if (progress > 0.1 && progress < 0.8) {
+            text1.classList.add("visible");
+        } else {
+            text1.classList.remove("visible");
+        }
+    });
+});
+
             Math.floor(progress * frameCount)
         );
 
