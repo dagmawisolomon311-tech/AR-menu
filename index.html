@@ -391,6 +391,74 @@
                 }
             });
         });
+       <!-- CINEMATIC CANVAS ENGINE -->
+
+document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.getElementById("frame-canvas");
+    const section = document.getElementById("cinematic-hero");
+    const text1 = document.getElementById("scroll-text-1");
+
+    if (!canvas || !section) return;
+
+    const context = canvas.getContext("2d");
+    
+    // 1. Set this to the total number of frame images you uploaded to GitHub!
+    const frameCount = 60; 
+
+    // 2. Matches your extracted image names (e.g., frame_0001.jpg)
+    const currentFrame = index => (
+        `frame_${index.toString().padStart(4, '0')}.jpg`
+    );
+
+    const images = [];
+    let imagesLoaded = 0;
+
+    // Preload images
+    for (let i = 1; i <= frameCount; i++) {
+        const img = new Image();
+        img.src = currentFrame(i);
+        img.onload = () => {
+            imagesLoaded++;
+            if (imagesLoaded === 1) {
+                canvas.width = img.naturalWidth || 1080;
+                canvas.height = img.naturalHeight || 1920;
+                context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+        };
+        images.push(img);
+    }
+
+    // Scroll progress tracker
+    window.addEventListener("scroll", () => {
+        const rect = section.getBoundingClientRect();
+        const scrollDistance = -rect.top;
+        const scrollableHeight = rect.height - window.innerHeight;
+        
+        let progress = scrollDistance / scrollableHeight;
+        progress = Math.max(0, Math.min(1, progress));
+
+        const frameIndex = Math.min(
+            frameCount - 1,
+            Math.floor(progress * frameCount)
+        );
+
+        if (images[frameIndex] && images[frameIndex].complete) {
+            window.requestAnimationFrame(() => {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(images[frameIndex], 0, 0, canvas.width, canvas.height);
+            });
+        }
+
+        // Trigger text visibility
+        if (progress > 0.1 && progress < 0.8) {
+            text1.classList.add("visible");
+        } else {
+            text1.classList.remove("visible");
+        }
+    });
+});
+
+ 
     </script>
 </body>
 </html>
