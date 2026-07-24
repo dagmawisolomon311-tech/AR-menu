@@ -691,3 +691,52 @@ body.light-mode .mobile-bottom-bar {
         padding-bottom: 75px; 
     }
 }
+/* --- CINEMATIC CANVAS HERO SECTION --- */
+.scroll-canvas-section {
+    height: 400vh; /* Creates the long scrollable area */
+    position: relative;
+    background-color: #000;
+}
+
+.sticky-container {
+    position: sticky;
+    top: 0;
+    height: 100vh; 
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+}
+
+#frame-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+.scroll-text-overlay {
+    position: absolute;
+    text-align: center;
+    color: #fff;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.scroll-text-overlay.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.main-content {
+    position: relative;
+    background-color: #121212; /* Change this to match your website's background color */
+    z-index: 20;
+}
