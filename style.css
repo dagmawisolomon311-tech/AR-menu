@@ -11,6 +11,15 @@
     --font-sans: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* Light Mode Theme Variables */
+body.light-mode {
+    --bg-dark: #fbf7f5;
+    --card-bg: #ffffff;
+    --border-color: #e5e7eb;
+    --text-white: #1a1310;
+    --text-muted: #6b7280;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -23,6 +32,7 @@ body {
     color: var(--text-white);
     line-height: 1.6;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Header */
@@ -37,6 +47,11 @@ header {
     top: 0;
     z-index: 1000;
     border-bottom: 1px solid var(--border-color);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+body.light-mode header {
+    background: rgba(255, 255, 255, 0.95);
 }
 
 .logo {
@@ -46,6 +61,7 @@ header {
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--text-white);
 }
 
 .logo-icon {
@@ -115,6 +131,7 @@ nav a:hover, nav a.active {
     font-size: 52px;
     line-height: 1.15;
     margin-bottom: 20px;
+    color: var(--text-white);
 }
 
 .hero h1 .highlight {
@@ -202,6 +219,7 @@ nav a:hover, nav a.active {
     font-family: var(--font-serif);
     font-size: 28px;
     font-style: italic;
+    color: #fff;
 }
 
 .section-tag {
@@ -217,6 +235,7 @@ nav a:hover, nav a.active {
     font-family: var(--font-serif);
     font-size: 38px;
     margin-bottom: 20px;
+    color: var(--text-white);
 }
 
 .story-content p {
@@ -236,6 +255,7 @@ nav a:hover, nav a.active {
     padding: 8px 16px;
     border-radius: 12px;
     font-size: 13px;
+    color: var(--text-white);
 }
 
 /* Menu Section */
@@ -249,6 +269,7 @@ nav a:hover, nav a.active {
     font-family: var(--font-serif);
     font-size: 40px;
     margin-bottom: 40px;
+    color: var(--text-white);
 }
 
 .category-title {
@@ -260,18 +281,15 @@ nav a:hover, nav a.active {
 
 .cards-grid {
     display: grid;
-    /* This forces exactly 2 items per row */
     grid-template-columns: repeat(2, 1fr); 
     gap: 24px;
 }
 
-/* Optional: If you want it to go back to 1 item per row ONLY on very small mobile phones so it isn't too squished */
 @media(max-width: 600px) {
     .cards-grid {
         grid-template-columns: 1fr;
     }
 }
-
 
 /* Custom Dukem Card Styling */
 .dukem-card {
@@ -325,6 +343,7 @@ nav a:hover, nav a.active {
 .card-header h3 {
     font-family: var(--font-serif);
     font-size: 22px;
+    color: var(--text-white);
 }
 
 .card-header .price {
@@ -372,6 +391,7 @@ nav a:hover, nav a.active {
     font-family: var(--font-serif);
     font-size: 38px;
     margin-bottom: 10px;
+    color: var(--text-white);
 }
 
 .location-sub {
@@ -389,6 +409,7 @@ nav a:hover, nav a.active {
     border: 1px solid var(--border-color);
     padding: 18px;
     border-radius: 14px;
+    color: var(--text-white);
 }
 
 .info-item strong {
@@ -412,6 +433,7 @@ footer {
     font-family: var(--font-serif);
     font-size: 20px;
     margin-bottom: 8px;
+    color: var(--text-white);
 }
 
 .footer-sub {
@@ -421,18 +443,10 @@ footer {
 }
 
 .copyright {
-    color: #554841;
+    color: var(--text-muted);
     font-size: 12px;
 }
 
-/* Responsive */
-@media(max-width: 768px) {
-    .hero h1 { font-size: 36px; }
-    header { flex-wrap: wrap; gap: 15px; }
-    .visit-btn { display: none; }
-    .stats-grid { flex-direction: column; align-items: flex-start; gap: 15px; }
-    .stat-divider { display: none; }
-}
 /* Menu Filters */
 .menu-filter {
     display: flex;
@@ -463,6 +477,7 @@ footer {
     border-color: var(--primary-orange);
     box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
     font-weight: 600;
+    color: white;
 }
 
 .empty-state {
@@ -471,6 +486,7 @@ footer {
     color: var(--text-muted);
     padding: 40px;
 }
+
 .lang-btn {
     background: transparent;
     color: var(--text-white);
@@ -488,42 +504,13 @@ footer {
     color: var(--primary-orange);
 }
 
-/* Mobile Header and Navigation Fix */
-@media (max-width: 768px) {
-    header {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-    }
-    
-    /* Forces the navigation links to move to their own neat row underneath the logo and language button */
-    header nav, .nav-links {
-        order: 3 !important;
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        margin-top: 15px !important;
-        gap: 15px !important;
-    }
-}
-
-/* Light Mode Variables */
-body.light-mode {
-    --bg-dark: #fbf7f5;       /* Soft off-white background */
-    --card-bg: #ffffff;       /* Pure white for cards */
-    --border-color: #e5e7eb;  /* Light gray borders */
-    --text-white: #1a1310;    /* Dark brown/black text */
-    --text-muted: #6b7280;    /* Medium gray text */
-}
-
 /* Theme Toggle Button Styling */
 .theme-toggle {
     background: transparent;
     border: 1px solid var(--border-color);
     color: var(--text-white);
     padding: 8px 12px;
-    border-radius: 20px; /* Nice rounded pill shape */
+    border-radius: 20px;
     cursor: pointer;
     font-size: 16px;
     display: flex;
@@ -536,59 +523,27 @@ body.light-mode {
     background: var(--card-bg);
 }
 
-/* Ensures the header layout fits the new button */
-@media (max-width: 768px) {
-    .header-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-}
-/* --- Complete Light Mode Header Fix --- */
-
-/* 1. Turn the header background white/light */
-body.light-mode header {
-    background: rgba(255, 255, 255, 0.95) !important; 
-    border-bottom: 1px solid var(--border-color) !important;
-}
-
-/* 2. Make the logo and navigation links dark */
-body.light-mode .logo,
-body.light-mode header nav a {
-    color: var(--text-white) !important; 
-}
-
-/* 3. Fix the Theme Toggle and Language Button */
-body.light-mode .lang-btn,
-body.light-mode .theme-toggle {
-    color: var(--text-white) !important; 
-    border: 1px solid var(--border-color) !important;
-    background-color: transparent !important;
-}
-
-/* 4. Keep hover effects smooth */
-body.light-mode .lang-btn:hover,
-body.light-mode .theme-toggle:hover {
-    background-color: var(--border-color) !important;
-}
-/* ========================================================= */
-/* --- MODERN FLOATING MOBILE NAVIGATION (TELEGRAM STYLE) --- */
-/* ========================================================= */
-
+/* Modern Floating Mobile Navigation */
 .mobile-bottom-bar {
-    display: none; /* Hidden on large screens */
+    display: none;
     position: fixed;
-    bottom: 20px; /* Floats above the bottom of the screen */
-    left: 5%; /* Centers the bar */
-    width: 90%; /* Leaves a nice gap on the sides */
-    background: rgba(15, 10, 8, 0.75); /* Highly translucent for glass effect */
-    backdrop-filter: blur(15px); /* Strong blur like iOS/Telegram */
+    bottom: 20px;
+    left: 5%;
+    width: 90%;
+    background: rgba(15, 10, 8, 0.75);
+    backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.08); /* Very subtle glowing edge */
-    border-radius: 40px; /* The big modern curve */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 40px;
     z-index: 9999;
     padding: 10px 15px; 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Deep floating shadow */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+body.light-mode .mobile-bottom-bar {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-bottom-bar ul {
@@ -614,15 +569,14 @@ body.light-mode .theme-toggle:hover {
     gap: 4px;
     font-weight: 500;
     padding: 8px 0;
-    border-radius: 20px; /* Curved bubble for active state */
-    transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Smooth snap animation */
+    border-radius: 20px;
+    transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* The "Curved Bubble" active state */
 .mobile-bottom-bar li a.active {
     color: var(--primary-orange);
-    background: rgba(234, 88, 12, 0.15); /* Soft orange background bubble */
-    transform: translateY(-2px); /* Slight pop up */
+    background: rgba(234, 88, 12, 0.15);
+    transform: translateY(-2px);
 }
 
 .mobile-icon {
@@ -630,70 +584,13 @@ body.light-mode .theme-toggle:hover {
     transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Icon pops slightly when active */
 .mobile-bottom-bar li a.active .mobile-icon {
     transform: scale(1.15);
 }
 
-/* Light Mode Support for Floating Bar */
-body.light-mode .mobile-bottom-bar {
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .mobile-bottom-bar li a.active {
-    background: rgba(234, 88, 12, 0.1);
-}
-
-/* --- Mobile Screen Adjustments --- */
-@media (max-width: 768px) {
-    .mobile-bottom-bar {
-        display: block; 
-    }
-    
-    header .nav-links {
-        display: none !important; 
-    }
-    
-    header {
-        flex-wrap: nowrap !important;
-    }
-    
-    body {
-        padding-bottom: 100px; /* Extra padding so content isn't hidden behind the floating bar */
-    }
-}
-
-/* Light Mode Support for Bottom Bar */
-body.light-mode .mobile-bottom-bar {
-    background: rgba(255, 255, 255, 0.95);
-}
-
-/* --- Mobile Screen Adjustments --- */
-@media (max-width: 768px) {
-    .mobile-bottom-bar {
-        display: block; /* Show the bottom bar on phones */
-    }
-    
-    /* Hide the old text links in the top header */
-    header .nav-links {
-        display: none !important; 
-    }
-    
-    /* Keep the Logo, Sun/Moon, and Language button on one neat line */
-    header {
-        flex-wrap: nowrap !important;
-    }
-    
-    /* Add padding to the very bottom of the website so content isn't hidden behind the new bar */
-    body {
-        padding-bottom: 75px; 
-    }
-}
-/* --- CINEMATIC CANVAS HERO SECTION --- */
+/* Canvas Section */
 .scroll-canvas-section {
-    height: 400vh; /* Creates the long scrollable area */
+    height: 400vh;
     position: relative;
     background-color: #000;
 }
@@ -735,38 +632,25 @@ body.light-mode .mobile-bottom-bar {
     transform: translateY(0);
 }
 
-.main-content {
-    position: relative;
-    background-color: #121212; /* Change this to match your website's background color */
-    z-index: 20;
-}
-/* LIGHT MODE FIXES */
-body.light-mode {
-    background-color: #f8f9fa;
-    color: #1a1a1a;
-}
+/* Media Queries */
+@media (max-width: 768px) {
+    .mobile-bottom-bar {
+        display: block; 
+    }
+    
+    header .nav-links {
+        display: none !important; 
+    }
+    
+    header {
+        flex-wrap: nowrap !important;
+    }
+    
+    body {
+        padding-bottom: 75px; 
+    }
 
-body.light-mode h1, 
-body.light-mode h2, 
-body.light-mode h3, 
-body.light-mode h4,
-body.light-mode p,
-body.light-mode span:not(.highlight):not(.badge-tag):not(.price) {
-    color: #1a1a1a;
-}
-
-body.light-mode .hero-subtext,
-body.light-mode .location-sub,
-body.light-mode .card-desc {
-    color: #555555;
-}
-
-body.light-mode .dukem-card {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-}
-
-body.light-mode .info-item {
-    background-color: #ffffff;
-    border-color: #e0e0e0;
+    .hero h1 { 
+        font-size: 36px; 
+    }
 }
