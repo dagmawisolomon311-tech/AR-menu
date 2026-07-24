@@ -571,3 +571,76 @@ body.light-mode .lang-btn:hover,
 body.light-mode .theme-toggle:hover {
     background-color: var(--border-color) !important;
 }
+
+/* ========================================================= */
+/* --- PERMANENT MOBILE BOTTOM NAVIGATION FIXES --- */
+/* ========================================================= */
+
+.mobile-bottom-bar {
+    display: none; /* Hidden on large computer screens */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(15, 10, 8, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border-color);
+    z-index: 9999;
+    padding: 12px 0 20px 0; /* Extra padding for phone swipe areas */
+}
+
+.mobile-bottom-bar ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    margin: 0;
+    padding: 0;
+}
+
+.mobile-bottom-bar li a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    gap: 4px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.mobile-bottom-bar li a:hover,
+.mobile-bottom-bar li a.active {
+    color: var(--primary-orange);
+}
+
+.mobile-icon {
+    font-size: 20px;
+}
+
+/* Light Mode Support for Bottom Bar */
+body.light-mode .mobile-bottom-bar {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* --- Mobile Screen Adjustments --- */
+@media (max-width: 768px) {
+    .mobile-bottom-bar {
+        display: block; /* Show the bottom bar on phones */
+    }
+    
+    /* Hide the old text links in the top header */
+    header .nav-links {
+        display: none !important; 
+    }
+    
+    /* Keep the Logo, Sun/Moon, and Language button on one neat line */
+    header {
+        flex-wrap: nowrap !important;
+    }
+    
+    /* Add padding to the very bottom of the website so content isn't hidden behind the new bar */
+    body {
+        padding-bottom: 75px; 
+    }
+}
