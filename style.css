@@ -571,30 +571,37 @@ body.light-mode .lang-btn:hover,
 body.light-mode .theme-toggle:hover {
     background-color: var(--border-color) !important;
 }
-
 /* ========================================================= */
-/* --- PERMANENT MOBILE BOTTOM NAVIGATION FIXES --- */
+/* --- MODERN FLOATING MOBILE NAVIGATION (TELEGRAM STYLE) --- */
 /* ========================================================= */
 
 .mobile-bottom-bar {
-    display: none; /* Hidden on large computer screens */
+    display: none; /* Hidden on large screens */
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(15, 10, 8, 0.95);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--border-color);
+    bottom: 20px; /* Floats above the bottom of the screen */
+    left: 5%; /* Centers the bar */
+    width: 90%; /* Leaves a nice gap on the sides */
+    background: rgba(15, 10, 8, 0.75); /* Highly translucent for glass effect */
+    backdrop-filter: blur(15px); /* Strong blur like iOS/Telegram */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Very subtle glowing edge */
+    border-radius: 40px; /* The big modern curve */
     z-index: 9999;
-    padding: 12px 0 20px 0; /* Extra padding for phone swipe areas */
+    padding: 10px 15px; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Deep floating shadow */
 }
 
 .mobile-bottom-bar ul {
     list-style: none;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    align-items: center;
     margin: 0;
     padding: 0;
+}
+
+.mobile-bottom-bar li {
+    flex: 1;
 }
 
 .mobile-bottom-bar li a {
@@ -603,19 +610,59 @@ body.light-mode .theme-toggle:hover {
     align-items: center;
     text-decoration: none;
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 11px;
     gap: 4px;
     font-weight: 500;
-    transition: 0.3s;
+    padding: 8px 0;
+    border-radius: 20px; /* Curved bubble for active state */
+    transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Smooth snap animation */
 }
 
-.mobile-bottom-bar li a:hover,
+/* The "Curved Bubble" active state */
 .mobile-bottom-bar li a.active {
     color: var(--primary-orange);
+    background: rgba(234, 88, 12, 0.15); /* Soft orange background bubble */
+    transform: translateY(-2px); /* Slight pop up */
 }
 
 .mobile-icon {
     font-size: 20px;
+    transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Icon pops slightly when active */
+.mobile-bottom-bar li a.active .mobile-icon {
+    transform: scale(1.15);
+}
+
+/* Light Mode Support for Floating Bar */
+body.light-mode .mobile-bottom-bar {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .mobile-bottom-bar li a.active {
+    background: rgba(234, 88, 12, 0.1);
+}
+
+/* --- Mobile Screen Adjustments --- */
+@media (max-width: 768px) {
+    .mobile-bottom-bar {
+        display: block; 
+    }
+    
+    header .nav-links {
+        display: none !important; 
+    }
+    
+    header {
+        flex-wrap: nowrap !important;
+    }
+    
+    body {
+        padding-bottom: 100px; /* Extra padding so content isn't hidden behind the floating bar */
+    }
 }
 
 /* Light Mode Support for Bottom Bar */
