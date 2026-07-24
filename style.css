@@ -544,3 +544,21 @@ body.light-mode {
         align-items: center;
     }
 }
+/* --- Light Mode Fixes for Logo and Language Button --- */
+
+/* Fixes the 'Dukem' logo so it turns dark in light mode */
+body.light-mode .logo {
+    color: var(--text-white) !important; /* Uses the dark text variable we created */
+}
+
+/* Fixes the Language Button so it stays visible */
+body.light-mode .language-btn {
+    color: var(--text-white) !important; 
+    border: 1px solid var(--border-color) !important;
+    background-color: transparent !important;
+}
+
+/* Optional: Keep the hover effect looking nice in light mode */
+body.light-mode .language-btn:hover {
+    background-color: var(--border-color) !important;
+}
