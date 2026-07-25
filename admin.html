@@ -119,7 +119,7 @@
                 <p>Loading pending comments...</p>
             </div>
 
-            <!-- NEW: Approved Comments Management Section -->
+            <!-- Managed Comments Section (Approved & Hidden) -->
             <h2 style="border-top: 1px solid var(--border-color); padding-top: 30px;">Live / Approved Comments</h2>
             <div class="admin-list" id="admin-approved-comments-list">
                 <p>Loading approved comments...</p>
@@ -167,7 +167,7 @@
                 document.getElementById('dashboardArea').style.display = 'block';
                 loadAdminMenu(); 
                 loadPendingComments(); 
-                loadApprovedComments(); // Load approved comments list on login
+                loadManagedComments(); 
             } else {
                 document.getElementById('login-error').style.display = 'block';
             }
@@ -261,59 +261,63 @@
             });
         }
 
-        // ==========================================
-        // NEW: APPROVED COMMENTS MANAGEMENT LOGIC
-        // ==========================================
-        function loadApprovedComments() {
+        // MANAGED COMMENTS LOGIC (Approved & Hidden)
+        function loadManagedComments() {
             const commentsRef = collection(db, "comments");
-            const q = query(commentsRef, where("status", "==", "approved"));
+            const q = query(commentsRef, where("status", "in", ["approved", "hidden"]));
 
             onSnapshot(q, (snapshot) => {
-                const approvedContainer = document.getElementById("admin-approved-comments-list");
-                if (!approvedContainer) return;
+                const managedContainer = document.getElementById("admin-approved-comments-list");
+                if (!managedContainer) return;
                 
-                approvedContainer.innerHTML = "";
+                managedContainer.innerHTML = "";
 
                 if (snapshot.empty) {
-                    approvedContainer.innerHTML = "<p style='color: var(--text-muted);'>No live comments right now.</p>";
+                    managedContainer.innerHTML = "<p style='color: var(--text-muted);'>No live or hidden comments right now.</p>";
                     return;
                 }
 
                 snapshot.forEach((docSnap) => {
                     const comment = docSnap.data();
                     const commentId = docSnap.id;
+                    const isHidden = comment.status === "hidden";
 
-                    const approvedHTML = `
-                        <div class="admin-item">
+                    const opacityStyle = isHidden ? "opacity: 0.5;" : "";
+                    const toggleActionText = isHidden ? "Show" : "Hide";
+                    const statusBadge = isHidden ? " <span style='color: var(--text-muted); font-size: 12px;'>(Hidden)</span>" : "";
+
+                    const managedHTML = `
+                        <div class="admin-item" style="${opacityStyle}">
                             <div class="item-info">
-                                <h3>${comment.name}</h3>
+                                <h3>${comment.name} ${statusBadge}</h3>
                                 <p style="color: var(--text-white); margin-top: 4px;">"${comment.text}"</p>
                             </div>
                             <div class="item-actions">
-                                <button class="btn-hide" onclick="hideApprovedComment('${commentId}')">Hide</button>
-                                <button class="btn-delete" onclick="deleteApprovedComment('${commentId}')">Delete</button>
+                                <button class="btn-hide" onclick="toggleCommentVisibility('${commentId}', '${comment.status}')">${toggleActionText}</button>
+                                <button class="btn-delete" onclick="deleteManagedComment('${commentId}')">Delete</button>
                             </div>
                         </div>
                     `;
-                    approvedContainer.innerHTML += approvedHTML;
+                    managedContainer.innerHTML += managedHTML;
                 });
             });
         }
 
-        // Hide an approved comment (changes its status back to "hidden" so it leaves the homepage)
-        window.hideApprovedComment = async function(id) {
+        // Toggle between "approved" and "hidden"
+        window.toggleCommentVisibility = async function(id, currentStatus) {
             try {
                 const commentRef = doc(db, "comments", id);
-                await updateDoc(commentRef, { status: "hidden" });
+                const newStatus = currentStatus === "approved" ? "hidden" : "approved";
+                await updateDoc(commentRef, { status: newStatus });
             } catch (error) {
-                console.error("Error hiding comment:", error);
-                alert("Failed to hide comment.");
+                console.error("Error toggling comment visibility:", error);
+                alert("Failed to update comment status.");
             }
         }
 
-        // Permanently delete an approved comment
-        window.deleteApprovedComment = async function(id) {
-            if(confirm("Are you sure you want to delete this live comment permanently?")) {
+        // Permanently delete a managed comment
+        window.deleteManagedComment = async function(id) {
+            if(confirm("Are you sure you want to delete this comment permanently?")) {
                 try {
                     await deleteDoc(doc(db, "comments", id));
                 } catch (error) {
@@ -322,7 +326,6 @@
                 }
             }
         }
-        // ==========================================
 
         // Approve Comment Function
         window.approveComment = async function(id) {
