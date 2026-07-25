@@ -21,30 +21,30 @@
     body { font-family: var(--font-sans); background: var(--bg-dark); color: var(--text-white); margin: 0; padding: 0;}
     header { background: rgba(15, 10, 8, 0.9); padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;}
     header a { text-decoration: none; color: var(--primary-orange); font-weight: 600; }
-    
+
     /* Login Screen Styles */
     #loginArea { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
     .login-box { background: var(--card-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; width: 100%; max-width: 400px; }
-    
+
     /* Show/Hide Password Container */
     .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
     .password-wrapper input { padding-right: 45px; } /* Leave space for the eye icon */
     .toggle-password { position: absolute; right: 15px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; outline: none; }
     .toggle-password:hover { color: var(--text-white); }
-    
+
     /* Dashboard Styles */
     #dashboardArea { display: none; }
     .admin-container { padding: 40px 20px; max-width: 800px; margin: auto; }
-    
+
     .form-card { background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 40px; }
     .form-group { margin-bottom: 15px; }
     input, select { width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; color: white; font-family: var(--font-sans); box-sizing: border-box;}
     input::placeholder { color: var(--text-muted); }
-    
+
     .save-btn, .login-btn { background: var(--primary-orange); color: white; padding: 14px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.3s;}
     .save-btn:hover, .login-btn:hover { background: #c2410c; }
     .cancel-btn { background: transparent; color: var(--text-muted); padding: 14px; border: 1px solid var(--text-muted); border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; display: none; }
-    
+
     /* List styling */
     .admin-list { display: flex; flex-direction: column; gap: 15px; }
     .admin-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;}
@@ -54,6 +54,7 @@
     .btn-edit { background: #f59e0b; color: #000; }
     .btn-hide { background: #4b5563; color: white; }
     .btn-delete { background: #dc2626; color: white; }
+    .btn-approve { background: #16a34a; color: white; } /* Green button for approvals */
   </style>
 </head>
 <body>
@@ -79,28 +80,28 @@
     <!-- Main Dashboard Area (Hidden until logged in) -->
     <div id="dashboardArea">
         <div class="admin-container">
-            
+
             <!-- Add / Edit Form -->
             <div class="form-card">
                 <h2 id="form-title">Add New Dish</h2>
-                
+
                 <div class="form-group">
                     <select id="category">
                         <option value="Food">Food</option>
                         <option value="Drink">Drink</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group"><input type="text" id="name" placeholder="English Name (e.g. Tere Siga)"></div>
                 <div class="form-group"><input type="text" id="nameAm" placeholder="Amharic Name (e.g. ጥሬ ሥጋ)"></div>
-                
+
                 <div class="form-group"><input type="text" id="desc" placeholder="English Description"></div>
                 <div class="form-group"><input type="text" id="descAm" placeholder="Amharic Description (ማብራሪያ)"></div>
-                
+
                 <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 480 ETB)"></div>
                 <div class="form-group"><input type="text" id="img" placeholder="Image File URL (e.g. kurt.jpg)"></div>
                 <div class="form-group"><input type="text" id="model" placeholder="3D Model File URL (e.g. kurt.glb)"></div>
-                
+
                 <button class="save-btn" id="save-btn">Save Dish</button>
                 <button class="cancel-btn" id="cancel-btn">Cancel Edit</button>
                 <p id="status-msg" style="color: var(--success); text-align: center; display: none; margin-top: 10px;">Saved successfully!</p>
@@ -108,8 +109,14 @@
 
             <!-- List of Existing Items -->
             <h2>Current Menu Items</h2>
-            <div class="admin-list" id="admin-menu-list">
+            <div class="admin-list" id="admin-menu-list" style="margin-bottom: 40px;">
                 <p>Loading items...</p>
+            </div>
+
+            <!-- NEW: Pending Comments Moderation Section -->
+            <h2 style="border-top: 1px solid var(--border-color); padding-top: 30px;">Pending Comments Review</h2>
+            <div class="admin-list" id="admin-comments-list">
+                <p>Loading pending comments...</p>
             </div>
 
         </div>
@@ -118,7 +125,7 @@
     <!-- Firebase Dynamic Data Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
@@ -131,7 +138,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
+
         // --- LOGIN & SHOW/HIDE PASSWORD LOGIC ---
         const ADMIN_PASSWORD = "eagle"; // CHANGE THIS TO YOUR ACTUAL PASSWORD
         const passInput = document.getElementById('admin-pass');
@@ -153,6 +160,7 @@
                 document.getElementById('loginArea').style.display = 'none';
                 document.getElementById('dashboardArea').style.display = 'block';
                 loadAdminMenu(); 
+                loadPendingComments(); // Load pending comments queue on login
             } else {
                 document.getElementById('login-error').style.display = 'block';
             }
@@ -179,7 +187,7 @@
             const listContainer = document.getElementById("admin-menu-list");
             listContainer.innerHTML = "";
             const querySnapshot = await getDocs(collection(db, "menuItems"));
-            
+
             if(querySnapshot.empty) {
                 listContainer.innerHTML = "<p>No items in database.</p>";
                 return;
@@ -188,7 +196,7 @@
             querySnapshot.forEach((docSnap) => {
                 const item = docSnap.data();
                 const id = docSnap.id;
-                
+
                 const visibilityText = item.hidden ? "Unhide" : "Hide";
                 const visibilityStyle = item.hidden ? "opacity: 0.5;" : "";
 
@@ -209,15 +217,80 @@
             });
         }
 
+        // ==========================================
+        // NEW: PENDING COMMENTS MODERATION LOGIC
+        // ==========================================
+        function loadPendingComments() {
+            const commentsRef = collection(db, "comments");
+            const q = query(commentsRef, where("status", "==", "pending"));
+
+            onSnapshot(q, (snapshot) => {
+                const commentsContainer = document.getElementById("admin-comments-list");
+                if (!commentsContainer) return;
+                
+                commentsContainer.innerHTML = "";
+
+                if (snapshot.empty) {
+                    commentsContainer.innerHTML = "<p style='color: var(--text-muted);'>No pending comments to review.</p>";
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const comment = docSnap.data();
+                    const commentId = docSnap.id;
+
+                    const commentHTML = `
+                        <div class="admin-item">
+                            <div class="item-info">
+                                <h3>${comment.name}</h3>
+                                <p style="color: var(--text-white); margin-top: 4px;">"${comment.text}"</p>
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn-approve" onclick="approveComment('${commentId}')">Approve</button>
+                                <button class="btn-delete" onclick="rejectComment('${commentId}')">Reject</button>
+                            </div>
+                        </div>
+                    `;
+                    commentsContainer.innerHTML += commentHTML;
+                });
+            });
+        }
+
+        // Approve Comment Function
+        window.approveComment = async function(id) {
+            try {
+                const commentRef = doc(db, "comments", id);
+                await updateDoc(commentRef, { status: "approved" });
+                console.log("Comment approved successfully");
+            } catch (error) {
+                console.error("Error approving comment:", error);
+                alert("Failed to approve comment.");
+            }
+        }
+
+        // Reject / Delete Comment Function
+        window.rejectComment = async function(id) {
+            if(confirm("Are you sure you want to reject and delete this comment?")) {
+                try {
+                    await deleteDoc(doc(db, "comments", id));
+                    console.log("Comment rejected successfully");
+                } catch (error) {
+                    console.error("Error deleting comment:", error);
+                    alert("Failed to reject comment.");
+                }
+            }
+        }
+        // ==========================================
+
         // Edit Item Function
         window.editItem = async function(id) {
             try {
                 const docRef = doc(db, "menuItems", id);
                 const docSnap = await getDoc(docRef);
-                
+
                 if (docSnap.exists()) {
                     const item = docSnap.data();
-                    
+
                     catInput.value = item.Category || "Food";
                     nameInput.value = item.Name || "";
                     nameAmInput.value = item.NameAm || "";
@@ -226,13 +299,13 @@
                     priceInput.value = item.Price || "";
                     imgInput.value = item.Image || "";
                     modelInput.value = item.Model || "";
-                    
+
                     editingId = id;
-                    
+
                     document.getElementById("form-title").innerText = "Edit Dish";
                     saveBtn.innerText = "Update Dish";
                     cancelBtn.style.display = "block";
-                    
+
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             } catch (error) {
@@ -268,10 +341,10 @@
                 } else {
                     await addDoc(collection(db, "menuItems"), itemData);
                 }
-                
+
                 statusMsg.style.display = "block";
                 setTimeout(() => statusMsg.style.display = "none", 3000);
-                
+
                 resetForm();
                 loadAdminMenu();
             } catch (error) {
