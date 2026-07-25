@@ -20,7 +20,11 @@
     }
     body { font-family: var(--font-sans); background: var(--bg-dark); color: var(--text-white); margin: 0; padding: 0;}
     header { background: rgba(15, 10, 8, 0.9); padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;}
-    header a { text-decoration: none; color: var(--primary-orange); font-weight: 600; }
+    header a { text-decoration: none; color: var(--primary-orange); font-weight: 600; margin-left: 15px;}
+    
+    .header-right { display: flex; align-items: center; }
+    .logout-btn { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; }
+    .logout-btn:hover { background: #b91c1c; }
 
     /* Login Screen Styles */
     #loginArea { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
@@ -28,7 +32,7 @@
 
     /* Show/Hide Password Container */
     .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
-    .password-wrapper input { padding-right: 45px; } /* Leave space for the eye icon */
+    .password-wrapper input { padding-right: 45px; } 
     .toggle-password { position: absolute; right: 15px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; outline: none; }
     .toggle-password:hover { color: var(--text-white); }
 
@@ -61,19 +65,25 @@
 
     <header>
         <div class="logo">Dukem Admin Dashboard</div>
-        <a href="index.html">← Back to Website</a>
+        <div class="header-right">
+            <button id="logout-btn" class="logout-btn">Logout</button>
+            <a href="index.html">← Back to Website</a>
+        </div>
     </header>
 
-    <!-- Password Login Screen -->
+    <!-- Secure Login Screen -->
     <div id="loginArea">
         <div class="login-box">
             <h2>Admin Access</h2>
+            <div class="form-group">
+                <input type="text" id="admin-email" placeholder="Enter Username (Email)">
+            </div>
             <div class="form-group password-wrapper">
                 <input type="password" id="admin-pass" placeholder="Enter Password">
                 <button type="button" class="toggle-password" id="toggle-pass">👁️</button>
             </div>
             <button class="login-btn" id="login-btn">Login</button>
-            <p id="login-error" style="color: #dc2626; display: none; margin-top: 10px;">Incorrect password.</p>
+            <p id="login-error" style="color: #dc2626; display: none; margin-top: 10px;">Incorrect username or password.</p>
         </div>
     </div>
 
@@ -132,6 +142,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        // NEW: Import Authentication modules
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
@@ -144,33 +156,69 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app); // Initialize Authentication
 
-        // --- LOGIN & SHOW/HIDE PASSWORD LOGIC ---
-        const ADMIN_PASSWORD = "eagle"; // CHANGE THIS TO YOUR ACTUAL PASSWORD
+        // --- NEW SECURE LOGIN LOGIC ---
+        const emailInput = document.getElementById('admin-email');
         const passInput = document.getElementById('admin-pass');
         const toggleBtn = document.getElementById('toggle-pass');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginError = document.getElementById('login-error');
 
         // Toggle visibility
         toggleBtn.addEventListener('click', () => {
             if (passInput.type === 'password') {
                 passInput.type = 'text';
-                toggleBtn.innerText = '🙈'; // Change icon when showing
+                toggleBtn.innerText = '🙈';
             } else {
                 passInput.type = 'password';
-                toggleBtn.innerText = '👁️'; // Change icon back when hidden
+                toggleBtn.innerText = '👁️';
             }
         });
 
-        document.getElementById('login-btn').addEventListener('click', () => {
-            if(passInput.value === ADMIN_PASSWORD) {
+        // Sign In
+        loginBtn.addEventListener('click', () => {
+            const email = emailInput.value.trim();
+            const password = passInput.value.trim();
+            
+            loginBtn.innerText = "Logging in...";
+            
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    loginError.style.display = 'none';
+                    loginBtn.innerText = "Login";
+                })
+                .catch((error) => {
+                    loginError.style.display = 'block';
+                    loginBtn.innerText = "Login";
+                });
+        });
+
+        // Listen for Login/Logout State Changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in! Show dashboard.
                 document.getElementById('loginArea').style.display = 'none';
                 document.getElementById('dashboardArea').style.display = 'block';
+                logoutBtn.style.display = 'block';
                 loadAdminMenu(); 
                 loadPendingComments(); 
                 loadManagedComments(); 
             } else {
-                document.getElementById('login-error').style.display = 'block';
+                // User is signed out. Show login.
+                document.getElementById('loginArea').style.display = 'flex';
+                document.getElementById('dashboardArea').style.display = 'none';
+                logoutBtn.style.display = 'none';
+                // Clear inputs
+                emailInput.value = '';
+                passInput.value = '';
             }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
         });
         // --- END LOGIN LOGIC ---
 
