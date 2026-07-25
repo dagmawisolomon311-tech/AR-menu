@@ -54,7 +54,7 @@
     .btn-edit { background: #f59e0b; color: #000; }
     .btn-hide { background: #4b5563; color: white; }
     .btn-delete { background: #dc2626; color: white; }
-    .btn-approve { background: #16a34a; color: white; } /* Green button for approvals */
+    .btn-approve { background: #16a34a; color: white; }
   </style>
 </head>
 <body>
@@ -113,10 +113,16 @@
                 <p>Loading items...</p>
             </div>
 
-            <!-- NEW: Pending Comments Moderation Section -->
+            <!-- Pending Comments Moderation Section -->
             <h2 style="border-top: 1px solid var(--border-color); padding-top: 30px;">Pending Comments Review</h2>
-            <div class="admin-list" id="admin-comments-list">
+            <div class="admin-list" id="admin-comments-list" style="margin-bottom: 40px;">
                 <p>Loading pending comments...</p>
+            </div>
+
+            <!-- NEW: Approved Comments Management Section -->
+            <h2 style="border-top: 1px solid var(--border-color); padding-top: 30px;">Live / Approved Comments</h2>
+            <div class="admin-list" id="admin-approved-comments-list">
+                <p>Loading approved comments...</p>
             </div>
 
         </div>
@@ -160,7 +166,8 @@
                 document.getElementById('loginArea').style.display = 'none';
                 document.getElementById('dashboardArea').style.display = 'block';
                 loadAdminMenu(); 
-                loadPendingComments(); // Load pending comments queue on login
+                loadPendingComments(); 
+                loadApprovedComments(); // Load approved comments list on login
             } else {
                 document.getElementById('login-error').style.display = 'block';
             }
@@ -217,9 +224,7 @@
             });
         }
 
-        // ==========================================
-        // NEW: PENDING COMMENTS MODERATION LOGIC
-        // ==========================================
+        // PENDING COMMENTS MODERATION LOGIC
         function loadPendingComments() {
             const commentsRef = collection(db, "comments");
             const q = query(commentsRef, where("status", "==", "pending"));
@@ -256,12 +261,74 @@
             });
         }
 
+        // ==========================================
+        // NEW: APPROVED COMMENTS MANAGEMENT LOGIC
+        // ==========================================
+        function loadApprovedComments() {
+            const commentsRef = collection(db, "comments");
+            const q = query(commentsRef, where("status", "==", "approved"));
+
+            onSnapshot(q, (snapshot) => {
+                const approvedContainer = document.getElementById("admin-approved-comments-list");
+                if (!approvedContainer) return;
+                
+                approvedContainer.innerHTML = "";
+
+                if (snapshot.empty) {
+                    approvedContainer.innerHTML = "<p style='color: var(--text-muted);'>No live comments right now.</p>";
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const comment = docSnap.data();
+                    const commentId = docSnap.id;
+
+                    const approvedHTML = `
+                        <div class="admin-item">
+                            <div class="item-info">
+                                <h3>${comment.name}</h3>
+                                <p style="color: var(--text-white); margin-top: 4px;">"${comment.text}"</p>
+                            </div>
+                            <div class="item-actions">
+                                <button class="btn-hide" onclick="hideApprovedComment('${commentId}')">Hide</button>
+                                <button class="btn-delete" onclick="deleteApprovedComment('${commentId}')">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                    approvedContainer.innerHTML += approvedHTML;
+                });
+            });
+        }
+
+        // Hide an approved comment (changes its status back to "hidden" so it leaves the homepage)
+        window.hideApprovedComment = async function(id) {
+            try {
+                const commentRef = doc(db, "comments", id);
+                await updateDoc(commentRef, { status: "hidden" });
+            } catch (error) {
+                console.error("Error hiding comment:", error);
+                alert("Failed to hide comment.");
+            }
+        }
+
+        // Permanently delete an approved comment
+        window.deleteApprovedComment = async function(id) {
+            if(confirm("Are you sure you want to delete this live comment permanently?")) {
+                try {
+                    await deleteDoc(doc(db, "comments", id));
+                } catch (error) {
+                    console.error("Error deleting comment:", error);
+                    alert("Failed to delete comment.");
+                }
+            }
+        }
+        // ==========================================
+
         // Approve Comment Function
         window.approveComment = async function(id) {
             try {
                 const commentRef = doc(db, "comments", id);
                 await updateDoc(commentRef, { status: "approved" });
-                console.log("Comment approved successfully");
             } catch (error) {
                 console.error("Error approving comment:", error);
                 alert("Failed to approve comment.");
@@ -273,14 +340,12 @@
             if(confirm("Are you sure you want to reject and delete this comment?")) {
                 try {
                     await deleteDoc(doc(db, "comments", id));
-                    console.log("Comment rejected successfully");
                 } catch (error) {
                     console.error("Error deleting comment:", error);
                     alert("Failed to reject comment.");
                 }
             }
         }
-        // ==========================================
 
         // Edit Item Function
         window.editItem = async function(id) {
