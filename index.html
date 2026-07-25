@@ -15,7 +15,7 @@
     <!-- Header Navigation -->
     <header>
         <div class="logo">D Dukem</div>
-        
+
         <nav class="nav-links">
             <a href="#home" data-en="Home" data-am="መነሻ">Home</a>
             <a href="#menu-section" data-en="Menu" data-am="ሜኑ">Menu</a>
@@ -37,7 +37,7 @@
         <div class="sticky-container">
             <!-- Canvas where the sequence is drawn -->
             <canvas id="frame-canvas"></canvas>
-            
+
             <!-- Floating Text Overlay -->
             <div class="scroll-text-overlay" id="scroll-text-1">
                 <h2>SMASHED TO ORDER.</h2>
@@ -56,7 +56,7 @@
             <div class="location-badge">• DUKEM · ETHIOPIA</div>
             <h1 data-i18n="hero-title">Tinsae <span class="highlight">Kurt</span> & <i>Ketfo</i>, Burger & <span class="highlight">Pizza</span></h1>
             <p class="hero-subtext" data-i18n="hero-subtext">Authentic kurt & ketfo carved from Ethiopian tradition, next to flame-grilled burgers and wood-fired pizza. Two worlds. One table.</p>
-            
+
             <div class="hero-actions">
                 <a href="#menu-section" class="btn-primary" data-i18n="btn-menu">View Menu →</a>
                 <a href="#location-section" class="btn-secondary" data-i18n="btn-find">Find Us</a>
@@ -120,6 +120,32 @@
             </div>
         </section>
 
+        <!-- ========================================== -->
+        <!-- NEW GUESTBOOK / REVIEWS SECTION -->
+        <!-- ========================================== -->
+        <section class="menu-container" id="reviews-section" style="border-top: 1px solid var(--border-color); padding-top: 60px;">
+            <div class="menu-header" style="text-align: center;">
+                <span class="section-tag" data-i18n="tag-reviews">GUESTBOOK</span>
+                <h2 data-i18n="reviews-title">Leave a Comment</h2>
+            </div>
+            
+            <!-- Comment Submission Form -->
+            <div style="max-width: 600px; margin: 0 auto 40px auto; background: var(--card-bg); padding: 25px; border-radius: 14px; border: 1px solid var(--border-color);">
+                <form id="comment-form" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="text" id="comment-name" placeholder="Your Name" required style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: transparent; color: var(--text-white); font-family: var(--font-sans);">
+                    <textarea id="comment-text" rows="3" placeholder="Share your experience..." required style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: transparent; color: var(--text-white); resize: vertical; font-family: var(--font-sans);"></textarea>
+                    <button type="submit" class="btn-primary" style="border: none; cursor: pointer;">Submit Review</button>
+                    <p id="comment-status-msg" style="color: var(--accent-gold); font-size: 14px; text-align: center; display: none; margin-top: 10px;">Thank you! Your comment has been sent for review.</p>
+                </form>
+            </div>
+
+            <!-- Approved Comments Feed Grid -->
+            <div id="live-comments-feed" class="cards-grid">
+                <!-- Live comments will load here automatically -->
+            </div>
+        </section>
+        <!-- ========================================== -->
+
         <!-- Location & Contact Section -->
         <section class="location-section" id="location-section">
             <span class="section-tag" data-i18n="tag-find">FIND US</span>
@@ -169,8 +195,9 @@
 
     <!-- Firebase Dynamic Data Fetcher & Translator -->
     <script type="module">
+        // Updated Imports to include addDoc, query, where, onSnapshot, and serverTimestamp
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
@@ -183,7 +210,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
+
         let allMenuItems = []; 
 
         // --- TRANSLATION SYSTEM ---
@@ -205,7 +232,8 @@
                 "location-sub": "On the Addis–Adama road, 37 km south of the capital. Look for the copper sign and the smoke.",
                 "info-address": "Address", "info-address-val": "Main St, Dukem, Oromia, Ethiopia",
                 "info-hours": "Hours", "info-hours-val": "Mon–Sun · 11:00 — 23:00", "info-phone": "Phone",
-                "footer-sub": "Tinsae Kurt & Ketfo · Burger & Pizza", "btn-ar": "View in AR"
+                "footer-sub": "Tinsae Kurt & Ketfo · Burger & Pizza", "btn-ar": "View in AR",
+                "tag-reviews": "GUESTBOOK", "reviews-title": "Leave a Comment" // Added Translation for new section
             },
             am: {
                 "nav-home": "መነሻ", "nav-menu": "ሜኑ", "nav-story": "ታሪካችን", "btn-visit": "ይጎብኙን",
@@ -224,7 +252,8 @@
                 "location-sub": "በአዲስ አበባ–አዳማ መንገድ፣ ከዋና ከተማው 37 ኪ.ሜ ርቀት።",
                 "info-address": "አድራሻ", "info-address-val": "ዋና መንገድ፣ ዱከም፣ ኦሮሚያ፣ ኢትዮጵያ",
                 "info-hours": "የስራ ሰዓት", "info-hours-val": "ሰኞ–እሁድ · 11:00 — 23:00", "info-phone": "ስልክ",
-                "footer-sub": "ቲንሳኤ ቁርት እና ክትፎ · በርገር እና ፒዛ", "btn-ar": "በ AR ይመልከቱ"
+                "footer-sub": "ቲንሳኤ ቁርት እና ክትፎ · በርገር እና ፒዛ", "btn-ar": "በ AR ይመልከቱ",
+                "tag-reviews": "የእንግዳ ማስታወሻ", "reviews-title": "አስተያየት ይተዉ" // Added Translation for new section
             }
         };
 
@@ -234,7 +263,7 @@
         document.getElementById('lang-btn').addEventListener('click', () => {
             currentGlobalLang = currentGlobalLang === 'en' ? 'am' : 'en';
             document.getElementById('lang-btn').innerText = currentGlobalLang === 'en' ? '🇪🇹 አማርኛ' : '🇬🇧 English';
-            
+
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 const key = element.getAttribute('data-i18n');
                 if (uiTranslations[currentGlobalLang][key]) {
@@ -253,7 +282,7 @@
 
             try {
                 const querySnapshot = await getDocs(collection(db, "menuItems"));
-                
+
                 if (loadingText) loadingText.remove();
 
                 if (querySnapshot.empty) {
@@ -269,7 +298,7 @@
                 });
 
                 renderMenu("all"); 
-                
+
             } catch (error) {
                 console.error("Database loading error:", error);
                 menuGrid.innerHTML = "<p class='empty-state'>Error loading menu database.</p>";
@@ -330,6 +359,80 @@
 
         loadPublicMenu();
 
+        // ==========================================
+        // NEW: CUSTOMER COMMENTS LOGIC
+        // ==========================================
+        
+        // 1. Submit a Comment (Sets status to "pending")
+        const commentForm = document.getElementById('comment-form');
+        const statusMsg = document.getElementById('comment-status-msg');
+
+        if (commentForm) {
+            commentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const nameInput = document.getElementById('comment-name').value;
+                const textInput = document.getElementById('comment-text').value;
+                
+                try {
+                    const commentsRef = collection(db, "comments");
+                    await addDoc(commentsRef, {
+                        name: nameInput,
+                        text: textInput,
+                        status: "pending", // Prevents spam from going live automatically
+                        timestamp: serverTimestamp()
+                    });
+                    
+                    // Reset form and show a brief success message
+                    commentForm.reset();
+                    statusMsg.style.display = 'block';
+                    setTimeout(() => { statusMsg.style.display = 'none'; }, 5000);
+                } catch (error) {
+                    console.error("Error submitting comment: ", error);
+                    alert("Error submitting comment. Please try again.");
+                }
+            });
+        }
+
+        // 2. Fetch Live (Approved) Comments automatically
+        function fetchApprovedComments() {
+            const commentsRef = collection(db, "comments");
+            const q = query(commentsRef, where("status", "==", "approved"));
+
+            onSnapshot(q, (snapshot) => {
+                const feedContainer = document.getElementById('live-comments-feed');
+                if (!feedContainer) return;
+                
+                feedContainer.innerHTML = ''; // Clear current feed before rendering
+                
+                if (snapshot.empty) {
+                    feedContainer.innerHTML = "<p class='empty-state' style='grid-column: 1 / -1;'>Be the first to leave a review!</p>";
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    
+                    // Build the sleek comment card matching your UI
+                    const commentCard = `
+                        <div class="dukem-card" style="padding: 20px; min-height: auto;">
+                            <div class="card-header" style="margin-bottom: 8px;">
+                                <h3 style="font-size: 18px;">${data.name}</h3>
+                                <span class="price">⭐</span>
+                            </div>
+                            <p class="card-desc" style="margin-bottom: 0;">"${data.text}"</p>
+                        </div>
+                    `;
+                    feedContainer.innerHTML += commentCard;
+                });
+            });
+        }
+
+        // Initialize the live feed when page loads
+        fetchApprovedComments();
+        // ==========================================
+
+
         const themeBtn = document.getElementById('theme-btn');
         const body = document.body;
 
@@ -343,7 +446,7 @@
         // 2. Toggle the theme when the button is clicked
         themeBtn.addEventListener('click', () => {
             body.classList.toggle('light-mode');
-            
+
             // Check if light mode is now active
             if (body.classList.contains('light-mode')) {
                 localStorage.setItem('theme', 'light'); // Save preference
@@ -401,7 +504,7 @@
             if (!canvas || !section) return;
 
             const context = canvas.getContext("2d");
-            
+
             // IMPORTANT: Change 60 to the exact total number of ezgif-frame images you have!
             const frameCount = 190; 
 
@@ -434,7 +537,7 @@
                 const rect = section.getBoundingClientRect();
                 const scrollDistance = -rect.top;
                 const scrollableHeight = rect.height - window.innerHeight;
-                
+
                 let progress = scrollDistance / scrollableHeight;
                 progress = Math.max(0, Math.min(1, progress));
 
