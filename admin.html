@@ -1,503 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dukem Admin</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-        --bg-dark: #0f0a08;
-        --card-bg: #1a1310;
-        --border-color: #2e2019;
-        --primary-orange: #ea580c;
-        --text-white: #fbf7f5;
-        --text-muted: #a3948c;
-        --success: #16a34a;
-        --font-sans: 'Plus Jakarta Sans', sans-serif;
-    }
-    body { font-family: var(--font-sans); background: var(--bg-dark); color: var(--text-white); margin: 0; padding: 0;}
-    header { background: rgba(15, 10, 8, 0.9); padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;}
-    header a { text-decoration: none; color: var(--primary-orange); font-weight: 600; margin-left: 15px;}
-    
-    .header-right { display: flex; align-items: center; }
-    .logout-btn { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; display: none; }
-    .logout-btn:hover { background: #b91c1c; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Bistro Reality AR & Admin</title>
 
-    /* Login Screen Styles */
-    #loginArea { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
-    .login-box { background: var(--card-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; width: 100%; max-width: 400px; }
+    <!-- A-Frame & MindAR -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-    /* Show/Hide Password Container */
-    .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
-    .password-wrapper input { padding-right: 45px; } 
-    .toggle-password { position: absolute; right: 15px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; outline: none; }
-    .toggle-password:hover { color: var(--text-white); }
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    /* Dashboard Styles */
-    #dashboardArea { display: none; }
-    .admin-container { padding: 40px 20px; max-width: 800px; margin: auto; }
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
 
-    .form-card { background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 40px; }
-    .form-group { margin-bottom: 15px; }
-    input, select { width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; color: white; font-family: var(--font-sans); box-sizing: border-box;}
-    input::placeholder { color: var(--text-muted); }
+        /* AR Overlays */
+        #loading { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; z-index: 999; }
+        #close { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 14px 28px; border: none; background: #ff4757; color: white; font-size: 16px; font-weight: 700; border-radius: 12px; z-index: 1000; cursor: pointer; box-shadow: 0 4px 15px rgba(255,71,87,0.4); display: none; }
+        
+        /* Admin Button on AR Screen */
+        #adminToggleBtn { position: fixed; top: 20px; right: 20px; padding: 10px 18px; border: none; background: rgba(255,255,255,0.9); color: #2f3542; font-weight: 700; border-radius: 8px; z-index: 1000; cursor: pointer; }
 
-    .save-btn, .login-btn { background: var(--primary-orange); color: white; padding: 14px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: 0.3s;}
-    .save-btn:hover, .login-btn:hover { background: #c2410c; }
-    .cancel-btn { background: transparent; color: var(--text-muted); padding: 14px; border: 1px solid var(--text-muted); border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; display: none; }
+        /* Admin Modal UI */
+        #adminModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .admin-card { background: #fff; border-radius: 16px; padding: 25px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .admin-card h2 { margin-bottom: 15px; color: #2f3542; font-size: 22px; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; color: #57606f; margin-bottom: 6px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
+        .form-group img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-top: 8px; display: none; border: 1px solid #eee; }
+        .btn-submit { width: 100%; padding: 14px; background: #2ed573; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .btn-close-admin { width: 100%; padding: 10px; background: #f1f2f6; color: #57606f; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+    </style>
 
-    /* List styling */
-    .admin-list { display: flex; flex-direction: column; gap: 15px; }
-    .admin-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;}
-    .item-info h3 { margin: 0 0 5px 0; font-size: 18px; color: var(--primary-orange); }
-    .item-info p { margin: 0; font-size: 14px; color: var(--text-muted); }
-    .item-actions button { margin-left: 10px; padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
-    .btn-edit { background: #f59e0b; color: #000; }
-    .btn-hide { background: #4b5563; color: white; }
-    .btn-delete { background: #dc2626; color: white; }
-    .btn-approve { background: #16a34a; color: white; }
-  </style>
+    <script>
+        AFRAME.registerComponent('touch-gestures', {
+            init: function () {
+                this.isDragging = false;
+                this.previousPosition = { x: 0, y: 0 };
+                this.initialPinchDistance = 0;
+                this.currentScale = 1;
+
+                this.onTouchStart = this.onTouchStart.bind(this);
+                this.onTouchMove = this.onTouchMove.bind(this);
+                this.onTouchEnd = this.onTouchEnd.bind(this);
+
+                this.el.sceneEl.addEventListener('loaded', () => {
+                    const canvas = this.el.sceneEl.canvas;
+                    canvas.addEventListener('touchstart', this.onTouchStart, { passive: false });
+                    canvas.addEventListener('touchmove', this.onTouchMove, { passive: false });
+                    canvas.addEventListener('touchend', this.onTouchEnd);
+                });
+            },
+
+            onTouchStart: function(e) {
+                if (e.touches.length === 1) {
+                    this.isDragging = true;
+                    this.previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
+                } else if (e.touches.length === 2) {
+                    this.isDragging = false;
+                    this.initialPinchDistance = Math.hypot(
+                        e.touches[0].pageX - e.touches[1].pageX,
+                        e.touches[0].pageY - e.touches[1].pageY
+                    );
+                    this.currentScale = this.el.object3D.scale.x;
+                }
+            },
+
+            onTouchMove: function(e) {
+                e.preventDefault(); 
+
+                if (this.isDragging && e.touches.length === 1) {
+                    const deltaX = e.touches[0].pageX - this.previousPosition.x;
+                    const deltaY = e.touches[0].pageY - this.previousPosition.y;
+
+                    this.el.object3D.rotation.y += deltaX * 0.01;
+                    this.el.object3D.rotation.x += deltaY * 0.01;
+
+                    this.previousPosition = { x: e.touches[0].pageX, y: e.touches[0].pageY };
+                } else if (e.touches.length === 2) {
+                    const currentDistance = Math.hypot(
+                        e.touches[0].pageX - e.touches[1].pageX,
+                        e.touches[0].pageY - e.touches[1].pageY
+                    );
+                    const pinchRatio = currentDistance / this.initialPinchDistance;
+                    let newScale = this.currentScale * pinchRatio;
+
+                    if (newScale < 0.01) newScale = 0.01;
+                    if (newScale > 100) newScale = 100;
+
+                    this.el.object3D.scale.set(newScale, newScale, newScale);
+                }
+            },
+
+            onTouchEnd: function() {
+                this.isDragging = false;
+            }
+        });
+    </script>
 </head>
 <body>
 
-    <header>
-        <div class="logo">Dukem Admin Dashboard</div>
-        <div class="header-right">
-            <button id="logout-btn" class="logout-btn">Logout</button>
-            <a href="index.html">← Back to Website</a>
-        </div>
-    </header>
+    <div id="loading">Point camera at target...</div>
+    <button id="close">Close AR</button>
+    <button id="adminToggleBtn" onclick="openAdminModal()">⚙️ Admin</button>
 
-    <!-- Secure Login Screen -->
-    <div id="loginArea">
-        <div class="login-box">
-            <h2>Admin Access</h2>
-            <div class="form-group">
-                <input type="text" id="admin-email" placeholder="Enter Username (Email)">
-            </div>
-            <div class="form-group password-wrapper">
-                <input type="password" id="admin-pass" placeholder="Enter Password">
-                <button type="button" class="toggle-password" id="toggle-pass">👁️</button>
-            </div>
-            <button class="login-btn" id="login-btn">Login</button>
-            <p id="login-error" style="color: #dc2626; display: none; margin-top: 10px;">Incorrect username or password.</p>
-        </div>
-    </div>
-
-    <!-- Main Dashboard Area (Hidden until logged in) -->
-    <div id="dashboardArea">
-        <div class="admin-container">
-
-            <!-- Add / Edit Form -->
-            <div class="form-card">
-                <h2 id="form-title">Add New Dish</h2>
-
+    <!-- Admin Panel Modal -->
+    <div id="adminModal">
+        <div class="admin-card">
+            <h2>Add Menu Item</h2>
+            <form id="addFoodForm">
                 <div class="form-group">
-                    <select id="category">
-                        <option value="Food">Food</option>
-                        <option value="Drink">Drink</option>
-                    </select>
+                    <label for="foodTitle">Food Name</label>
+                    <input type="text" id="foodTitle" placeholder="e.g. Classic Cheeseburger" required>
                 </div>
-
-                <div class="form-group"><input type="text" id="name" placeholder="English Name (e.g. Tere Siga)"></div>
-                <div class="form-group"><input type="text" id="nameAm" placeholder="Amharic Name (e.g. ጥሬ ሥጋ)"></div>
-
-                <div class="form-group"><input type="text" id="desc" placeholder="English Description"></div>
-                <div class="form-group"><input type="text" id="descAm" placeholder="Amharic Description (ማብራሪያ)"></div>
-
-                <div class="form-group"><input type="text" id="price" placeholder="Price (e.g. 480 ETB)"></div>
-                <div class="form-group"><input type="text" id="img" placeholder="Image File URL (e.g. kurt.jpg)"></div>
-                <div class="form-group"><input type="text" id="model" placeholder="3D Model File URL (e.g. kurt.glb)"></div>
-
-                <button class="save-btn" id="save-btn">Save Dish</button>
-                <button class="cancel-btn" id="cancel-btn">Cancel Edit</button>
-                <p id="status-msg" style="color: var(--success); text-align: center; display: none; margin-top: 10px;">Saved successfully!</p>
-            </div>
-
-            <!-- List of Existing Items -->
-            <h2>Current Menu Items</h2>
-            <div class="admin-list" id="admin-menu-list" style="margin-bottom: 40px;">
-                <p>Loading items...</p>
-            </div>
-
-            <!-- Pending Comments Moderation Section -->
-            <h2 style="border-top: 1px solid var(--border-color); padding-top: 30px;">Pending Comments Review</h2>
-            <div class="admin-list" id="admin-comments-list" style="margin-bottom: 40px;">
-                <p>Loading pending comments...</p>
-            </div>
-
-            <!-- Managed Comments Section (Approved & Hidden) -->
-            <h2 style="border-top: 1px solid var(--border-color); padding-top: 30px;">Live / Approved Comments</h2>
-            <div class="admin-list" id="admin-approved-comments-list">
-                <p>Loading approved comments...</p>
-            </div>
-
+                <div class="form-group">
+                    <label for="foodPrice">Price ($)</label>
+                    <input type="text" id="foodPrice" placeholder="12.99" required>
+                </div>
+                <div class="form-group">
+                    <label for="foodDesc">Description</label>
+                    <textarea id="foodDesc" rows="2" placeholder="Brief description..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="foodImage">Food Image</label>
+                    <input type="file" id="foodImage" accept="image/*" required>
+                    <img id="imagePreview" alt="Food Preview">
+                </div>
+                <div class="form-group">
+                    <label for="modelNameInput">3D Model File (.glb)</label>
+                    <input type="text" id="modelNameInput" placeholder="Avocado.glb" value="Avocado.glb" required>
+                </div>
+                <button type="submit" class="btn-submit" id="saveBtn">Save to Firebase</button>
+                <button type="button" class="btn-close-admin" onclick="closeAdminModal()">Cancel</button>
+            </form>
         </div>
     </div>
 
-    <!-- Firebase Dynamic Data Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-        // NEW: Import Authentication modules
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    <!-- AR Scene -->
+    <a-scene 
+        mindar-image="imageTargetSrc: targets.mind;" 
+        embedded 
+        color-space="sRGB" 
+        renderer="colorManagement: true"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
 
+        <a-assets id="assets-container"></a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-gltf-model 
+                id="food-model"
+                position="0 0 0" 
+                scale="1 1 1" 
+                rotation="0 0 0"
+                touch-gestures>
+            </a-gltf-model>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        // 1. Firebase Initialization (Replace with your Firebase Config keys)
         const firebaseConfig = {
-          apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
-          authDomain: "bistro-reality.firebaseapp.com",
-          projectId: "bistro-reality",
-          storageBucket: "bistro-reality.firebasestorage.app",
-          messagingSenderId: "3168029834",
-          appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app); // Initialize Authentication
+        // 2. Load 3D Model into AR Scene
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelName = urlParams.get('model') || 'Avocado.glb';
 
-        // --- NEW SECURE LOGIN LOGIC ---
-        const emailInput = document.getElementById('admin-email');
-        const passInput = document.getElementById('admin-pass');
-        const toggleBtn = document.getElementById('toggle-pass');
-        const loginBtn = document.getElementById('login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const loginError = document.getElementById('login-error');
+        const assetsContainer = document.getElementById('assets-container');
+        const foodModelEntity = document.getElementById('food-model');
 
-        // Toggle visibility
-        toggleBtn.addEventListener('click', () => {
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                toggleBtn.innerText = '🙈';
-            } else {
-                passInput.type = 'password';
-                toggleBtn.innerText = '👁️';
+        const assetItem = document.createElement('a-asset-item');
+        assetItem.setAttribute('id', 'dynamic-food-asset');
+        assetItem.setAttribute('src', modelName); 
+        assetsContainer.appendChild(assetItem);
+
+        foodModelEntity.setAttribute('src', '#dynamic-food-asset');
+
+        // 3. AR Status Handlers
+        const loadingEl = document.getElementById("loading");
+        const closeBtn = document.getElementById("close");
+
+        const sceneEl = document.querySelector("a-scene");
+        sceneEl.addEventListener("ready", () => { loadingEl.style.display = "none"; });
+        sceneEl.addEventListener("targetFound", () => { 
+            loadingEl.style.display = "none"; 
+            closeBtn.style.display = "block";
+        });
+        sceneEl.addEventListener("targetLost", () => {
+            loadingEl.style.display = "flex";
+            loadingEl.innerText = "Point camera at target...";
+        });
+
+        closeBtn.onclick = () => window.location.href = "index.html";
+
+        // 4. Admin Panel Image Handling & Firestore Operations
+        let uploadedImageBase64 = "";
+
+        document.getElementById('foodImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedImageBase64 = event.target.result;
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = uploadedImageBase64;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
             }
         });
 
-        // Sign In
-        loginBtn.addEventListener('click', () => {
-            const email = emailInput.value.trim();
-            const password = passInput.value.trim();
-            
-            loginBtn.innerText = "Logging in...";
-            
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    loginError.style.display = 'none';
-                    loginBtn.innerText = "Login";
-                })
-                .catch((error) => {
-                    loginError.style.display = 'block';
-                    loginBtn.innerText = "Login";
-                });
-        });
-
-        // Listen for Login/Logout State Changes
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in! Show dashboard.
-                document.getElementById('loginArea').style.display = 'none';
-                document.getElementById('dashboardArea').style.display = 'block';
-                logoutBtn.style.display = 'block';
-                loadAdminMenu(); 
-                loadPendingComments(); 
-                loadManagedComments(); 
-            } else {
-                // User is signed out. Show login.
-                document.getElementById('loginArea').style.display = 'flex';
-                document.getElementById('dashboardArea').style.display = 'none';
-                logoutBtn.style.display = 'none';
-                // Clear inputs
-                emailInput.value = '';
-                passInput.value = '';
-            }
-        });
-
-        // Logout
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth);
-        });
-        // --- END LOGIN LOGIC ---
-
-        let editingId = null; 
-
-        // Form Fields
-        const catInput = document.getElementById("category");
-        const nameInput = document.getElementById("name");
-        const nameAmInput = document.getElementById("nameAm");
-        const descInput = document.getElementById("desc");
-        const descAmInput = document.getElementById("descAm");
-        const priceInput = document.getElementById("price");
-        const imgInput = document.getElementById("img");
-        const modelInput = document.getElementById("model");
-        const saveBtn = document.getElementById("save-btn");
-        const cancelBtn = document.getElementById("cancel-btn");
-        const statusMsg = document.getElementById("status-msg");
-
-        // Load Menu Items
-        async function loadAdminMenu() {
-            const listContainer = document.getElementById("admin-menu-list");
-            listContainer.innerHTML = "";
-            const querySnapshot = await getDocs(collection(db, "menuItems"));
-
-            if(querySnapshot.empty) {
-                listContainer.innerHTML = "<p>No items in database.</p>";
-                return;
-            }
-
-            querySnapshot.forEach((docSnap) => {
-                const item = docSnap.data();
-                const id = docSnap.id;
-
-                const visibilityText = item.hidden ? "Unhide" : "Hide";
-                const visibilityStyle = item.hidden ? "opacity: 0.5;" : "";
-
-                const itemHTML = `
-                    <div class="admin-item" style="${visibilityStyle}">
-                        <div class="item-info">
-                            <h3>${item.Name} / ${item.NameAm || "No Amharic"}</h3>
-                            <p>${item.Price} | ${item.Category}</p>
-                        </div>
-                        <div class="item-actions">
-                            <button class="btn-edit" onclick="editItem('${id}')">Edit</button>
-                            <button class="btn-hide" onclick="toggleHide('${id}', ${item.hidden || false})">${visibilityText}</button>
-                            <button class="btn-delete" onclick="deleteItem('${id}')">Delete</button>
-                        </div>
-                    </div>
-                `;
-                listContainer.innerHTML += itemHTML;
-            });
+        function openAdminModal() {
+            document.getElementById('adminModal').style.display = 'flex';
         }
 
-        // PENDING COMMENTS MODERATION LOGIC
-        function loadPendingComments() {
-            const commentsRef = collection(db, "comments");
-            const q = query(commentsRef, where("status", "==", "pending"));
-
-            onSnapshot(q, (snapshot) => {
-                const commentsContainer = document.getElementById("admin-comments-list");
-                if (!commentsContainer) return;
-                
-                commentsContainer.innerHTML = "";
-
-                if (snapshot.empty) {
-                    commentsContainer.innerHTML = "<p style='color: var(--text-muted);'>No pending comments to review.</p>";
-                    return;
-                }
-
-                snapshot.forEach((docSnap) => {
-                    const comment = docSnap.data();
-                    const commentId = docSnap.id;
-
-                    const commentHTML = `
-                        <div class="admin-item">
-                            <div class="item-info">
-                                <h3>${comment.name}</h3>
-                                <p style="color: var(--text-white); margin-top: 4px;">"${comment.text}"</p>
-                            </div>
-                            <div class="item-actions">
-                                <button class="btn-approve" onclick="approveComment('${commentId}')">Approve</button>
-                                <button class="btn-delete" onclick="rejectComment('${commentId}')">Reject</button>
-                            </div>
-                        </div>
-                    `;
-                    commentsContainer.innerHTML += commentHTML;
-                });
-            });
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
         }
 
-        // MANAGED COMMENTS LOGIC (Approved & Hidden)
-        function loadManagedComments() {
-            const commentsRef = collection(db, "comments");
-            const q = query(commentsRef, where("status", "in", ["approved", "hidden"]));
-
-            onSnapshot(q, (snapshot) => {
-                const managedContainer = document.getElementById("admin-approved-comments-list");
-                if (!managedContainer) return;
-                
-                managedContainer.innerHTML = "";
-
-                if (snapshot.empty) {
-                    managedContainer.innerHTML = "<p style='color: var(--text-muted);'>No live or hidden comments right now.</p>";
-                    return;
-                }
-
-                snapshot.forEach((docSnap) => {
-                    const comment = docSnap.data();
-                    const commentId = docSnap.id;
-                    const isHidden = comment.status === "hidden";
-
-                    const opacityStyle = isHidden ? "opacity: 0.5;" : "";
-                    const toggleActionText = isHidden ? "Show" : "Hide";
-                    const statusBadge = isHidden ? " <span style='color: var(--text-muted); font-size: 12px;'>(Hidden)</span>" : "";
-
-                    const managedHTML = `
-                        <div class="admin-item" style="${opacityStyle}">
-                            <div class="item-info">
-                                <h3>${comment.name} ${statusBadge}</h3>
-                                <p style="color: var(--text-white); margin-top: 4px;">"${comment.text}"</p>
-                            </div>
-                            <div class="item-actions">
-                                <button class="btn-hide" onclick="toggleCommentVisibility('${commentId}', '${comment.status}')">${toggleActionText}</button>
-                                <button class="btn-delete" onclick="deleteManagedComment('${commentId}')">Delete</button>
-                            </div>
-                        </div>
-                    `;
-                    managedContainer.innerHTML += managedHTML;
-                });
-            });
-        }
-
-        // Toggle between "approved" and "hidden"
-        window.toggleCommentVisibility = async function(id, currentStatus) {
-            try {
-                const commentRef = doc(db, "comments", id);
-                const newStatus = currentStatus === "approved" ? "hidden" : "approved";
-                await updateDoc(commentRef, { status: newStatus });
-            } catch (error) {
-                console.error("Error toggling comment visibility:", error);
-                alert("Failed to update comment status.");
-            }
-        }
-
-        // Permanently delete a managed comment
-        window.deleteManagedComment = async function(id) {
-            if(confirm("Are you sure you want to delete this comment permanently?")) {
-                try {
-                    await deleteDoc(doc(db, "comments", id));
-                } catch (error) {
-                    console.error("Error deleting comment:", error);
-                    alert("Failed to delete comment.");
-                }
-            }
-        }
-
-        // Approve Comment Function
-        window.approveComment = async function(id) {
-            try {
-                const commentRef = doc(db, "comments", id);
-                await updateDoc(commentRef, { status: "approved" });
-            } catch (error) {
-                console.error("Error approving comment:", error);
-                alert("Failed to approve comment.");
-            }
-        }
-
-        // Reject / Delete Comment Function
-        window.rejectComment = async function(id) {
-            if(confirm("Are you sure you want to reject and delete this comment?")) {
-                try {
-                    await deleteDoc(doc(db, "comments", id));
-                } catch (error) {
-                    console.error("Error deleting comment:", error);
-                    alert("Failed to reject comment.");
-                }
-            }
-        }
-
-        // Edit Item Function
-        window.editItem = async function(id) {
-            try {
-                const docRef = doc(db, "menuItems", id);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const item = docSnap.data();
-
-                    catInput.value = item.Category || "Food";
-                    nameInput.value = item.Name || "";
-                    nameAmInput.value = item.NameAm || "";
-                    descInput.value = item.Description || "";
-                    descAmInput.value = item.DescriptionAm || "";
-                    priceInput.value = item.Price || "";
-                    imgInput.value = item.Image || "";
-                    modelInput.value = item.Model || "";
-
-                    editingId = id;
-
-                    document.getElementById("form-title").innerText = "Edit Dish";
-                    saveBtn.innerText = "Update Dish";
-                    cancelBtn.style.display = "block";
-
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            } catch (error) {
-                console.error("Error fetching document:", error);
-                alert("Failed to load item for editing.");
-            }
-        }
-
-        // Save Button Logic 
-        saveBtn.addEventListener("click", async () => {
-            if(!nameInput.value || !priceInput.value) {
-                alert("Please fill in at least the English name and price.");
-                return;
-            }
-
+        document.getElementById('addFoodForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
             saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
 
-            const itemData = {
-                Category: catInput.value,
-                Name: nameInput.value,
-                NameAm: nameAmInput.value, 
-                Description: descInput.value,
-                DescriptionAm: descAmInput.value, 
-                Price: priceInput.value,
-                Image: imgInput.value,
-                Model: modelInput.value,
-                hidden: false
+            const newItem = {
+                title: document.getElementById('foodTitle').value,
+                price: document.getElementById('foodPrice').value,
+                description: document.getElementById('foodDesc').value,
+                image: uploadedImageBase64,
+                model: document.getElementById('modelNameInput').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             try {
-                if(editingId) {
-                    await updateDoc(doc(db, "menuItems", editingId), itemData);
-                } else {
-                    await addDoc(collection(db, "menuItems"), itemData);
-                }
-
-                statusMsg.style.display = "block";
-                setTimeout(() => statusMsg.style.display = "none", 3000);
-
-                resetForm();
-                loadAdminMenu();
+                await db.collection('menu_items').add(newItem);
+                alert("Food item added to Firebase successfully!");
+                this.reset();
+                document.getElementById('imagePreview').style.display = 'none';
+                uploadedImageBase64 = "";
+                closeAdminModal();
             } catch (error) {
-                console.error("Error saving:", error);
-                alert("Error saving item to database.");
+                console.error("Error adding document: ", error);
+                alert("Error saving item: " + error.message);
+            } finally {
+                saveBtn.innerText = "Save to Firebase";
+                saveBtn.disabled = false;
             }
         });
-
-        // Delete Item
-        window.deleteItem = async function(id) {
-            if(confirm("Are you sure you want to delete this dish permanently?")) {
-                await deleteDoc(doc(db, "menuItems", id));
-                loadAdminMenu();
-            }
-        }
-
-        // Hide/Unhide Item 
-        window.toggleHide = async function(id, currentStatus) {
-            await updateDoc(doc(db, "menuItems", id), {
-                hidden: !currentStatus
-            });
-            loadAdminMenu();
-        }
-
-        // Reset form to blank
-        function resetForm() {
-            editingId = null;
-            nameInput.value = ""; nameAmInput.value = "";
-            descInput.value = ""; descAmInput.value = "";
-            priceInput.value = ""; imgInput.value = ""; modelInput.value = "";
-            saveBtn.innerText = "Save Dish";
-            cancelBtn.style.display = "none";
-            document.getElementById("form-title").innerText = "Add New Dish";
-        }
-
-        cancelBtn.addEventListener("click", resetForm);
-
     </script>
 </body>
 </html>
