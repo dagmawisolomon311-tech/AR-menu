@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - Login</title>
     
-    <!-- Firebase SDKs (Firestore Only) -->
+    <!-- Firebase SDKs (Auth and Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
@@ -45,9 +46,8 @@
             font-size: 14px;
         }
 
-        .save-btn {
+        .btn {
             width: 100%;
-            background-color: #f25c05;
             color: white;
             border: none;
             padding: 15px;
@@ -56,6 +56,8 @@
             font-size: 16px;
             cursor: pointer;
         }
+        .btn-primary { background-color: #f25c05; }
+        .btn-secondary { background-color: #333; margin-top: 10px; width: auto; padding: 10px 20px;}
 
         /* List Item Styles */
         .list-item {
@@ -93,67 +95,158 @@
         .btn-hide { background-color: #4b5563; color: white; }
         .btn-delete { background-color: #e53935; color: white; }
         .btn-approve { background-color: #43a047; color: white; }
+
+        /* Login Container Formatting */
+        #loginContainer {
+            max-width: 400px;
+            margin: 100px auto;
+            text-align: center;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
-    <!-- ADD NEW DISH SECTION -->
-    <h2 class="section-title">Add New Dish</h2>
-    <div class="card">
-        <form id="addDishForm">
-            <select id="dishCategory" required>
-                <option value="Food">Food</option>
-                <option value="Drink">Drink</option>
-            </select>
-
-            <input type="text" id="engName" placeholder="English Name (e.g. Tere Siga)" required>
-            <input type="text" id="amhName" placeholder="Amharic Name (e.g. ጥሬ ሥጋ)" required>
-            <input type="text" id="engDesc" placeholder="English Description" required>
-            <input type="text" id="amhDesc" placeholder="Amharic Description (ማብራሪያ)" required>
-            <input type="text" id="price" placeholder="Price (e.g. 480 ETB)" required>
-            
-            <label style="font-size: 12px; color: #999; margin-bottom: 5px; display: block;">Select Image from Gallery:</label>
-            <input type="file" id="imageFile" accept="image/*">
-            
-            <input type="text" id="modelUrl" placeholder="3D Model File URL (e.g. kurt.glb)">
-
-            <button type="submit" class="save-btn" id="saveBtn">Save Dish</button>
-        </form>
+    <!-- LOGIN SECTION -->
+    <div id="loginContainer">
+        <h2 style="color: #f25c05; font-size: 28px;">Admin Access</h2>
+        <p style="color: #999; margin-bottom: 20px;">Please log in to manage the menu.</p>
+        <div class="card">
+            <form id="loginForm">
+                <input type="email" id="adminEmail" placeholder="Admin Email" required>
+                <input type="password" id="adminPassword" placeholder="Password" required>
+                <button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
+                <p id="loginError" style="color: #e53935; font-size: 14px; margin-top: 15px; display: none;"></p>
+            </form>
+        </div>
     </div>
 
-    <!-- CURRENT MENU ITEMS SECTION -->
-    <h2 class="section-title">Current Menu Items</h2>
-    <div id="menuItemsContainer"></div>
+    <!-- MAIN DASHBOARD SECTION (Hidden by default) -->
+    <div id="dashboardContainer" style="display: none;">
+        <div class="header-flex">
+            <h2 class="section-title">Dukem Admin Dashboard</h2>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
 
-    <!-- PENDING COMMENTS SECTION -->
-    <h2 class="section-title">Pending Comments Review</h2>
-    <div id="pendingCommentsContainer"></div>
+        <!-- ADD NEW DISH SECTION -->
+        <h2 class="section-title">Add New Dish</h2>
+        <div class="card">
+            <form id="addDishForm">
+                <select id="dishCategory" required>
+                    <option value="Food">Food</option>
+                    <option value="Drink">Drink</option>
+                </select>
 
-    <!-- LIVE / APPROVED COMMENTS SECTION -->
-    <h2 class="section-title">Live / Approved Comments</h2>
-    <div id="approvedCommentsContainer"></div>
+                <input type="text" id="engName" placeholder="English Name (e.g. Tere Siga)" required>
+                <input type="text" id="amhName" placeholder="Amharic Name (e.g. ጥሬ ሥጋ)" required>
+                <input type="text" id="engDesc" placeholder="English Description" required>
+                <input type="text" id="amhDesc" placeholder="Amharic Description (ማብራሪያ)" required>
+                <input type="text" id="price" placeholder="Price (e.g. 480 ETB)" required>
+                
+                <label style="font-size: 12px; color: #999; margin-bottom: 5px; display: block;">Select Image from Gallery:</label>
+                <input type="file" id="imageFile" accept="image/*">
+                
+                <input type="text" id="modelUrl" placeholder="3D Model File URL (e.g. kurt.glb)">
+
+                <button type="submit" class="btn btn-primary" id="saveBtn">Save Dish</button>
+            </form>
+        </div>
+
+        <!-- CURRENT MENU ITEMS SECTION -->
+        <h2 class="section-title">Current Menu Items</h2>
+        <div id="menuItemsContainer"></div>
+
+        <!-- PENDING COMMENTS SECTION -->
+        <h2 class="section-title">Pending Comments Review</h2>
+        <div id="pendingCommentsContainer"></div>
+
+        <!-- LIVE / APPROVED COMMENTS SECTION -->
+        <h2 class="section-title">Live / Approved Comments</h2>
+        <div id="approvedCommentsContainer"></div>
+    </div>
 
     <script>
         // --- 1. CONFIGURATION ---
         const firebaseConfig = {
-  apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
-  authDomain: "bistro-reality.firebaseapp.com",
-  projectId: "bistro-reality",
-  storageBucket: "bistro-reality.firebasestorage.app",
-  messagingSenderId: "3168029834",
-  appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
-};
+          apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
+          authDomain: "bistro-reality.firebaseapp.com",
+          projectId: "bistro-reality",
+          storageBucket: "bistro-reality.firebasestorage.app",
+          messagingSenderId: "3168029834",
+          appId: "1:3168029834:web:ce82c2ad96dab6bc0d7173"
+        };
 
-        const IMGBB_API_KEY = "cca6600adeef7dd4882e0d0e20faa642"; 
+        const IMGBB_API_KEY = "YOUR_IMGBB_API_KEY_HERE"; 
         
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
+        
+        const auth = firebase.auth();
         const db = firebase.firestore();
 
         let editingItemId = null;
+        let menuUnsubscribe = null;
+        let commentsUnsubscribe = null;
 
-        // --- 2. ADD / EDIT DISH LOGIC WITH IMGBB UPLOAD ---
+        // --- 2. AUTHENTICATION LOGIC ---
+        const loginContainer = document.getElementById('loginContainer');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const loginError = document.getElementById('loginError');
+
+        // Monitor Login State
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
+                loginContainer.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                loadMenuItems();
+                loadComments();
+            } else {
+                // User is signed out
+                loginContainer.style.display = 'block';
+                dashboardContainer.style.display = 'none';
+                
+                // Stop listening to database if logged out to save reads
+                if(menuUnsubscribe) menuUnsubscribe();
+                if(commentsUnsubscribe) commentsUnsubscribe();
+            }
+        });
+
+        // Handle Login Submission
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const btn = document.getElementById('loginBtn');
+            
+            btn.innerText = "Authenticating...";
+            loginError.style.display = 'none';
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    btn.innerText = "Login";
+                    document.getElementById('loginForm').reset();
+                })
+                .catch((error) => {
+                    btn.innerText = "Login";
+                    loginError.innerText = error.message;
+                    loginError.style.display = 'block';
+                });
+        });
+
+        // Handle Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            auth.signOut();
+        });
+
+
+        // --- 3. ADD / EDIT DISH LOGIC WITH IMGBB UPLOAD ---
         document.getElementById('addDishForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -166,6 +259,9 @@
                 let finalImageUrl = "";
 
                 if (imageFile) {
+                    if (IMGBB_API_KEY === "YOUR_IMGBB_API_KEY_HERE") {
+                        throw new Error("Please insert your ImgBB API Key in admin.html line 161.");
+                    }
                     saveBtn.innerText = "Uploading Image...";
                     const formData = new FormData();
                     formData.append("image", imageFile);
@@ -223,9 +319,10 @@
             }
         });
 
-        // --- 3. FETCH AND DISPLAY MENU ITEMS ---
+
+        // --- 4. FETCH AND DISPLAY MENU ITEMS ---
         function loadMenuItems() {
-            db.collection('menu_items').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+            menuUnsubscribe = db.collection('menu_items').onSnapshot(snapshot => {
                 const container = document.getElementById('menuItemsContainer');
                 container.innerHTML = '';
 
@@ -238,12 +335,17 @@
                     const data = doc.data();
                     const id = doc.id;
 
+                    const engName = data.englishName || data.Name || 'Unnamed';
+                    const amhName = data.amharicName || data.NameAm || '';
+                    const itemPrice = data.price || data.Price || '0';
+                    const itemCategory = data.category || data.Category || 'Food';
+
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'list-item';
                     itemDiv.innerHTML = `
                         <div class="item-details">
-                            <h3>${data.englishName || ''} / ${data.amharicName || ''}</h3>
-                            <p>${data.price || ''} | ${data.category || ''} ${data.hidden ? '(Hidden)' : ''}</p>
+                            <h3>${engName} ${amhName ? '/ ' + amhName : ''}</h3>
+                            <p>${itemPrice} | ${itemCategory} ${data.hidden ? '(Hidden)' : ''}</p>
                         </div>
                         <div class="btn-group">
                             <button class="btn-edit" onclick="editItem('${id}')">Edit</button>
@@ -256,18 +358,19 @@
             });
         }
 
+
         // --- MENU ITEM ACTIONS ---
         async function editItem(id) {
             const doc = await db.collection('menu_items').doc(id).get();
             if (doc.exists) {
                 const data = doc.data();
-                document.getElementById('dishCategory').value = data.category || 'Food';
-                document.getElementById('engName').value = data.englishName || '';
-                document.getElementById('amhName').value = data.amharicName || '';
-                document.getElementById('engDesc').value = data.englishDesc || '';
-                document.getElementById('amhDesc').value = data.amharicDesc || '';
-                document.getElementById('price').value = data.price || '';
-                document.getElementById('modelUrl').value = data.modelUrl || '';
+                document.getElementById('dishCategory').value = data.category || data.Category || 'Food';
+                document.getElementById('engName').value = data.englishName || data.Name || '';
+                document.getElementById('amhName').value = data.amharicName || data.NameAm || '';
+                document.getElementById('engDesc').value = data.englishDesc || data.Description || '';
+                document.getElementById('amhDesc').value = data.amharicDesc || data.DescriptionAm || '';
+                document.getElementById('price').value = data.price || data.Price || '';
+                document.getElementById('modelUrl').value = data.modelUrl || data.Model || '';
                 
                 editingItemId = id;
                 document.getElementById('saveBtn').innerText = "Update Dish";
@@ -285,9 +388,9 @@
             }
         }
 
-        // --- 4. FETCH AND DISPLAY COMMENTS ---
+        // --- 5. FETCH AND DISPLAY COMMENTS ---
         function loadComments() {
-            db.collection('comments').onSnapshot(snapshot => {
+            commentsUnsubscribe = db.collection('comments').onSnapshot(snapshot => {
                 const pendingContainer = document.getElementById('pendingCommentsContainer');
                 const approvedContainer = document.getElementById('approvedCommentsContainer');
                 
@@ -308,7 +411,7 @@
                         pendingCount++;
                         commentDiv.innerHTML = `
                             <div class="item-details">
-                                <h3>${data.author || 'Anonymous'}</h3>
+                                <h3>${data.author || data.name || 'Anonymous'}</h3>
                                 <p>"${data.text || ''}"</p>
                             </div>
                             <div class="btn-group">
@@ -321,7 +424,7 @@
                         approvedCount++;
                         commentDiv.innerHTML = `
                             <div class="item-details">
-                                <h3>${data.author || 'Anonymous'}</h3>
+                                <h3>${data.author || data.name || 'Anonymous'}</h3>
                                 <p>"${data.text || ''}"</p>
                             </div>
                             <div class="btn-group">
@@ -348,10 +451,6 @@
                 await db.collection('comments').doc(id).delete();
             }
         }
-
-        // Initialize Realtime Listeners
-        loadMenuItems();
-        loadComments();
     </script>
 </body>
 </html>
