@@ -120,15 +120,13 @@
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- NEW GUESTBOOK / REVIEWS SECTION -->
-        <!-- ========================================== -->
+        <!-- Guestbook / Reviews Section -->
         <section class="menu-container" id="reviews-section" style="border-top: 1px solid var(--border-color); padding-top: 60px;">
             <div class="menu-header" style="text-align: center;">
                 <span class="section-tag" data-i18n="tag-reviews">GUESTBOOK</span>
                 <h2 data-i18n="reviews-title">Leave a Comment</h2>
             </div>
-            
+
             <!-- Comment Submission Form -->
             <div style="max-width: 600px; margin: 0 auto 40px auto; background: var(--card-bg); padding: 25px; border-radius: 14px; border: 1px solid var(--border-color);">
                 <form id="comment-form" style="display: flex; flex-direction: column; gap: 15px;">
@@ -144,7 +142,6 @@
                 <!-- Live comments will load here automatically -->
             </div>
         </section>
-        <!-- ========================================== -->
 
         <!-- Location & Contact Section -->
         <section class="location-section" id="location-section">
@@ -177,11 +174,8 @@
             <p class="copyright">© 2026 Dukem. All rights reserved.</p>
         </footer>
     </main>
-    <!-- ========================================== -->
-    <!-- END OF MAIN CONTENT WRAPPER -->
-    <!-- ========================================== -->
 
-    <!-- NEW MOBILE BOTTOM NAVIGATION -->
+    <!-- MOBILE BOTTOM NAVIGATION -->
     <nav class="mobile-bottom-bar">
         <ul>
             <li><a href="#home" class="active"><span class="mobile-icon">🏠</span><span data-en="Home" data-am="መነሻ">Home</span></a></li>
@@ -195,9 +189,8 @@
 
     <!-- Firebase Dynamic Data Fetcher & Translator -->
     <script type="module">
-        // Updated Imports to include addDoc, query, where, onSnapshot, and serverTimestamp
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyC11AWjH6Ftv17VNmD4Q7zXeekgQ6-OaGc",
@@ -233,7 +226,7 @@
                 "info-address": "Address", "info-address-val": "Main St, Dukem, Oromia, Ethiopia",
                 "info-hours": "Hours", "info-hours-val": "Mon–Sun · 11:00 — 23:00", "info-phone": "Phone",
                 "footer-sub": "Tinsae Kurt & Ketfo · Burger & Pizza", "btn-ar": "View in AR",
-                "tag-reviews": "GUESTBOOK", "reviews-title": "Leave a Comment" // Added Translation for new section
+                "tag-reviews": "GUESTBOOK", "reviews-title": "Leave a Comment"
             },
             am: {
                 "nav-home": "መነሻ", "nav-menu": "ሜኑ", "nav-story": "ታሪካችን", "btn-visit": "ይጎብኙን",
@@ -253,7 +246,7 @@
                 "info-address": "አድራሻ", "info-address-val": "ዋና መንገድ፣ ዱከም፣ ኦሮሚያ፣ ኢትዮጵያ",
                 "info-hours": "የስራ ሰዓት", "info-hours-val": "ሰኞ–እሁድ · 11:00 — 23:00", "info-phone": "ስልክ",
                 "footer-sub": "ቲንሳኤ ቁርት እና ክትፎ · በርገር እና ፒዛ", "btn-ar": "በ AR ይመልከቱ",
-                "tag-reviews": "የእንግዳ ማስታወሻ", "reviews-title": "አስተያየት ይተዉ" // Added Translation for new section
+                "tag-reviews": "የእንግዳ ማስታወሻ", "reviews-title": "አስተያየት ይተዉ"
             }
         };
 
@@ -273,36 +266,33 @@
 
             window.renderMenu(currentCategoryFilter);
         });
-        // --- END TRANSLATION SYSTEM ---
 
-
-        async function loadPublicMenu() {
+        // Real-time menu listener targeting 'menu_items'
+        function loadPublicMenu() {
             const menuGrid = document.getElementById("menu-grid");
-            const loadingText = document.getElementById("loading-text");
 
-            try {
-                const querySnapshot = await getDocs(collection(db, "menuItems"));
-
+            onSnapshot(collection(db, "menu_items"), (snapshot) => {
+                const loadingText = document.getElementById("loading-text");
                 if (loadingText) loadingText.remove();
 
-                if (querySnapshot.empty) {
+                if (snapshot.empty) {
                     menuGrid.innerHTML = "<p class='empty-state'>No items found.</p>";
+                    allMenuItems = [];
                     return;
                 }
 
                 allMenuItems = [];
-                querySnapshot.forEach((doc) => {
+                snapshot.forEach((doc) => {
                     const item = doc.data();
                     if (item.hidden === true) return; 
                     allMenuItems.push(item);
                 });
 
-                renderMenu("all"); 
-
-            } catch (error) {
+                renderMenu(currentCategoryFilter); 
+            }, (error) => {
                 console.error("Database loading error:", error);
                 menuGrid.innerHTML = "<p class='empty-state'>Error loading menu database.</p>";
-            }
+            });
         }
 
         window.renderMenu = function(categoryFilter) {
@@ -312,7 +302,7 @@
 
             const filteredItems = categoryFilter === "all" 
                 ? allMenuItems 
-                : allMenuItems.filter(item => item.Category === categoryFilter);
+                : allMenuItems.filter(item => (item.category || "").toLowerCase() === categoryFilter.toLowerCase());
 
             if (filteredItems.length === 0) {
                 menuGrid.innerHTML = "<p class='empty-state'>No items in this category yet.</p>";
@@ -320,33 +310,34 @@
             }
 
             filteredItems.forEach((item) => {
-                // Dual Language Checker for Firebase Database Fields
-                const displayName = (currentGlobalLang === 'am' && item.NameAm) ? item.NameAm : item.Name;
-                const displayDesc = (currentGlobalLang === 'am' && item.DescriptionAm) ? item.DescriptionAm : item.Description;
+                const displayName = (currentGlobalLang === 'am' && item.amharicName) ? item.amharicName : (item.englishName || 'Unnamed');
+                const displayDesc = (currentGlobalLang === 'am' && item.amharicDesc) ? item.amharicDesc : (item.englishDesc || '');
                 const btnText = uiTranslations[currentGlobalLang]["btn-ar"];
+                const formattedPrice = item.price ? (item.price.includes('ETB') || item.price.includes('$') ? item.price : `${item.price} ETB`) : '';
 
                 const cardHtml = `
                     <div class="dukem-card">
                         <div class="card-image-wrap">
-                            <img src="${item.Image}" alt="${displayName}">
-                            <span class="badge-tag">${item.Category || 'TRADITIONAL'}</span>
+                            <img src="${item.imageUrl || ''}" alt="${displayName}">
+                            <span class="badge-tag">${item.category || 'TRADITIONAL'}</span>
                         </div>
                         <div class="card-body">
                             <div class="card-header">
                                 <h3>${displayName}</h3>
-                                <span class="price">${item.Price.includes('ETB') || item.Price.includes('$') ? item.Price : item.Price + ' ETB'}</span>
+                                <span class="price">${formattedPrice}</span>
                             </div>
                             <p class="card-desc">${displayDesc}</p>
-                            <button class="ar-btn" onclick="viewAR('${item.Model}')">
+                            ${item.modelUrl ? `
+                            <button class="ar-btn" onclick="window.location.href='ar.html?model=${encodeURIComponent(item.modelUrl)}'">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
                                 ${btnText}
-                            </button>
+                            </button>` : ''}
                         </div>
                     </div>
                 `;
                 menuGrid.innerHTML += cardHtml;
             });
-        }
+        };
 
         document.querySelectorAll('.filter-btn').forEach(button => {
             button.addEventListener('click', (e) => {
@@ -359,31 +350,25 @@
 
         loadPublicMenu();
 
-        // ==========================================
-        // NEW: CUSTOMER COMMENTS LOGIC
-        // ==========================================
-        
-        // 1. Submit a Comment (Sets status to "pending")
+        // Customer Comments Form Submission
         const commentForm = document.getElementById('comment-form');
         const statusMsg = document.getElementById('comment-status-msg');
 
         if (commentForm) {
             commentForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+
                 const nameInput = document.getElementById('comment-name').value;
                 const textInput = document.getElementById('comment-text').value;
-                
+
                 try {
-                    const commentsRef = collection(db, "comments");
-                    await addDoc(commentsRef, {
-                        name: nameInput,
+                    await addDoc(collection(db, "comments"), {
+                        author: nameInput,
                         text: textInput,
-                        status: "pending", // Prevents spam from going live automatically
+                        status: "pending",
                         timestamp: serverTimestamp()
                     });
-                    
-                    // Reset form and show a brief success message
+
                     commentForm.reset();
                     statusMsg.style.display = 'block';
                     setTimeout(() => { statusMsg.style.display = 'none'; }, 5000);
@@ -394,17 +379,16 @@
             });
         }
 
-        // 2. Fetch Live (Approved) Comments automatically
+        // Fetch Approved Comments
         function fetchApprovedComments() {
-            const commentsRef = collection(db, "comments");
-            const q = query(commentsRef, where("status", "==", "approved"));
+            const q = query(collection(db, "comments"), where("status", "==", "approved"));
 
             onSnapshot(q, (snapshot) => {
                 const feedContainer = document.getElementById('live-comments-feed');
                 if (!feedContainer) return;
-                
-                feedContainer.innerHTML = ''; // Clear current feed before rendering
-                
+
+                feedContainer.innerHTML = '';
+
                 if (snapshot.empty) {
                     feedContainer.innerHTML = "<p class='empty-state' style='grid-column: 1 / -1;'>Be the first to leave a review!</p>";
                     return;
@@ -412,12 +396,10 @@
 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    
-                    // Build the sleek comment card matching your UI
                     const commentCard = `
                         <div class="dukem-card" style="padding: 20px; min-height: auto;">
                             <div class="card-header" style="margin-bottom: 8px;">
-                                <h3 style="font-size: 18px;">${data.name}</h3>
+                                <h3 style="font-size: 18px;">${data.author || data.name || 'Anonymous'}</h3>
                                 <span class="price">⭐</span>
                             </div>
                             <p class="card-desc" style="margin-bottom: 0;">"${data.text}"</p>
@@ -428,45 +410,36 @@
             });
         }
 
-        // Initialize the live feed when page loads
         fetchApprovedComments();
-        // ==========================================
 
-
+        // Theme Toggle
         const themeBtn = document.getElementById('theme-btn');
         const body = document.body;
 
-        // 1. Check if the user already chose a theme in a previous visit
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'light') {
+        if (localStorage.getItem('theme') === 'light') {
             body.classList.add('light-mode');
-            themeBtn.innerText = '🌙'; // Change icon to moon
+            themeBtn.innerText = '🌙';
         }
 
-        // 2. Toggle the theme when the button is clicked
         themeBtn.addEventListener('click', () => {
             body.classList.toggle('light-mode');
-
-            // Check if light mode is now active
             if (body.classList.contains('light-mode')) {
-                localStorage.setItem('theme', 'light'); // Save preference
-                themeBtn.innerText = '🌙'; // Switch icon to moon
+                localStorage.setItem('theme', 'light');
+                themeBtn.innerText = '🌙';
             } else {
-                localStorage.setItem('theme', 'dark'); // Save preference
-                themeBtn.innerText = '☀️'; // Switch icon to sun
+                localStorage.setItem('theme', 'dark');
+                themeBtn.innerText = '☀️';
             }
         });
 
-        // --- SCROLL SPY / AUTO-HIGHLIGHT NAV LINKS ---
+        // Scroll Spy Navigation
         document.addEventListener("DOMContentLoaded", () => {
-            // Select all sections that have an ID
             const sections = document.querySelectorAll("body, section[id]");
-            // Select all nav links in both desktop and mobile bars
             const allNavLinks = document.querySelectorAll(".nav-links a, .mobile-bottom-bar a");
 
             const observerOptions = {
                 root: null,
-                rootMargin: "-20% 0px -60% 0px", // Triggers when section is near the middle of the screen
+                rootMargin: "-20% 0px -60% 0px",
                 threshold: 0
             };
 
@@ -476,7 +449,6 @@
                         const currentId = entry.target.getAttribute("id");
 
                         allNavLinks.forEach((link) => {
-                            // Check if the link's href matches the section ID
                             if (link.getAttribute("href") === `#${currentId}`) {
                                 link.classList.add("active");
                             } else if (link.getAttribute("href").startsWith("#")) {
@@ -487,7 +459,6 @@
                 });
             }, observerOptions);
 
-            // Observe each section
             sections.forEach((section) => {
                 if (section.id) {
                     sectionObserver.observe(section);
@@ -495,7 +466,7 @@
             });
         });
 
-        // --- CINEMATIC CANVAS ENGINE ---
+        // Cinematic Canvas Animation
         document.addEventListener("DOMContentLoaded", () => {
             const canvas = document.getElementById("frame-canvas");
             const section = document.getElementById("cinematic-hero");
@@ -504,11 +475,8 @@
             if (!canvas || !section) return;
 
             const context = canvas.getContext("2d");
-
-            // IMPORTANT: Change 60 to the exact total number of ezgif-frame images you have!
             const frameCount = 190; 
 
-            // MATCHES ezgif-frame-001.jpg perfectly
             const currentFrame = index => (
                 `ezgif-frame-${index.toString().padStart(3, '0')}.jpg`
             );
@@ -516,13 +484,11 @@
             const images = [];
             let imagesLoaded = 0;
 
-            // Preload images
             for (let i = 1; i <= frameCount; i++) {
                 const img = new Image();
                 img.src = currentFrame(i);
                 img.onload = () => {
                     imagesLoaded++;
-                    // Draw the very first frame to the canvas immediately
                     if (imagesLoaded === 1) {
                         canvas.width = img.naturalWidth || 1080;
                         canvas.height = img.naturalHeight || 1920;
@@ -532,7 +498,6 @@
                 images.push(img);
             }
 
-            // Scroll progress tracker
             window.addEventListener("scroll", () => {
                 const rect = section.getBoundingClientRect();
                 const scrollDistance = -rect.top;
@@ -553,7 +518,6 @@
                     });
                 }
 
-                // Trigger text visibility
                 if (progress > 0.1 && progress < 0.8) {
                     text1.classList.add("visible");
                 } else {
