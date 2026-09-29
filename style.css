@@ -278,11 +278,34 @@ nav a:hover, nav a.active {
     margin-bottom: 20px;
     color: var(--accent-gold);
 }
-
+/* Forces the menu grid to display 2 items per line */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+    gap: 15px; /* Space between the cards */
+    padding: 10px;
+}
+
+/* Optional: Make the cards look good in a compact space */
+.dukem-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Optional: On larger screens (like laptops), show 3 or 4 per line */
+@media (min-width: 768px) {
+    .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 }
 
 @media(max-width: 600px) {
